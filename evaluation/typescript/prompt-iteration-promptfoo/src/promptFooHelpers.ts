@@ -82,7 +82,7 @@ export async function addExperimentToLiteral(
       }
     );
     // Log an experiment item.
-    datasetExperiment.log({
+    await datasetExperiment.log({
       datasetItemId: dataset.items[index].id,
       input: { content: JSON.parse(result.prompt.raw) },
       output: { content: result.response?.output },

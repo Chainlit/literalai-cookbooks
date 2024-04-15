@@ -1,1 +1,6 @@
+# Jupyter notebook
 **/*.ipynb_checkpoints
+
+# TypeScript
+**/dist
+**/node_modules

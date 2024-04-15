@@ -5,7 +5,7 @@ import { Prompt, Thread } from '@literalai/client';
 
 import { client } from './index';
 
-const openai = new OpenAI({});
+const openai = new OpenAI();
 
 async function wildlifeAssistant(
   thread: Thread,
@@ -19,7 +19,7 @@ async function wildlifeAssistant(
 
   const completion = await openai.chat.completions.create({
     model: 'gpt-3.5-turbo',
-    messages: messages ?? []
+    messages: messages
   });
 
   await client.instrumentation.openai(completion, run);
