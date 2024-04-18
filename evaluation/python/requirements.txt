@@ -1,4 +1,8 @@
 python-dotenv>=1.0.1
 chromadb>=0.4.24
 ragas>=0.1.7
-# literalai>=0.0.601
+literalai>=0.0.503
+outlines
+matplotlib
+openai
+tiktoken    
