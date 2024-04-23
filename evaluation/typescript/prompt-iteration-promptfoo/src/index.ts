@@ -6,9 +6,6 @@ import { evaluateWithPromptfoo } from './promptFooHelpers';
 import { runApplication } from './wildlifeAssistant';
 
 export const client = new LiteralClient();
-import OpenAI from 'openai';
-import { i } from '@literalai/client/dist/api-NNGlvKtN';
-const openai = new OpenAI();
 
 const DATASET_NAME = 'Animal Facts Dataset';
 const PROMPT_TEMPLATE_NAME = 'Animal Facts Template';
@@ -69,30 +66,32 @@ const createDataset = async () => {
 };
 
 const main = async () => {
-  const promptName = "Default";
-  // This will fetch the champion version, you can also pass a specific version
-  const prompt = await client.api.getPrompt(promptName);
+  /**
+   * Evaluate the prompt template with promptfoo and create experiment on Literal.
+   */
 
-  console.log(prompt?.settings);
-  // Optionally pass variables to the prompt
-  const variables = { foo: "bar" };
+  const { dataset, promptTemplate } = await createDataset();
 
-  if (!prompt) {
-	return console.error("Prompt not found");
+  await evaluateWithPromptfoo(
+    'Animal Facts Experiment',
+    dataset,
+    promptTemplate
+  );
 
-  }
-  const messages = prompt.format(variables);
-  console.log(messages);
+  /**
+   * Use another prompt template and evaluate anew.
+   * Visualize on Literal.
+   */
+  const promptTemplateEnhanced = await client.api.createPrompt(
+    PROMPT_TEMPLATE_NAME,
+    promptTemplate_2 as IGenerationMessage[]
+  );
 
-  // Prompt settings expose provider parameters: model, temperature, max_tokens, etc.
-  Object.assign(prompt.settings, { max_tokens: 100 });
-
-  const completion = await openai.chat.completions.create({
-    messages: messages,
-    ...prompt.settings
-  });
-
-  console.log(completion.choices[0].message);
+  await evaluateWithPromptfoo(
+    'Wild life Experiment',
+    dataset,
+    promptTemplateEnhanced
+  );
 };
 
 main();
