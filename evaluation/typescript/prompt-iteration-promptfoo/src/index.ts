@@ -16,7 +16,7 @@ const createDataset = async () => {
    * Create a prompt template.
    */
 
-  const promptTemplate = await client.api.createPrompt(
+  const promptTemplate = await client.api.getOrCreatePrompt(
     PROMPT_TEMPLATE_NAME,
     promptTemplate_1 as IGenerationMessage[]
   );
@@ -82,7 +82,7 @@ const main = async () => {
    * Use another prompt template and evaluate anew.
    * Visualize on Literal.
    */
-  const promptTemplateEnhanced = await client.api.createPrompt(
+  const promptTemplateEnhanced = await client.api.getOrCreatePrompt(
     PROMPT_TEMPLATE_NAME,
     promptTemplate_2 as IGenerationMessage[]
   );
