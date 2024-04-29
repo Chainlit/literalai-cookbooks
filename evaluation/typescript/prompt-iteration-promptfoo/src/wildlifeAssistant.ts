@@ -45,7 +45,8 @@ export async function runApplication(promptTemplate: Prompt) {
     const thread = await client.thread({ name: animal }).upsert();
 
     const messages: ChatCompletionMessageParam[] =
-      promptTemplate?.format({ animal }) || [];
+      promptTemplate?.formatMessages({ animal }) || [];
+
 
     await thread
       .step({
