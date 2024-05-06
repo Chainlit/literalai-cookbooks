@@ -1,11 +1,10 @@
 "use client";
 
 import { useChat } from "ai/react";
-import { useEffect, useState } from "react";
-import { v4 as uuid } from "uuid";
+import { useState } from "react";
 
 export default function Chat() {
-  const [threadId] = useState(uuid());
+  const [threadId] = useState(crypto.randomUUID());
   const { messages, input, handleInputChange, handleSubmit } = useChat({
     body: { threadId },
   });
@@ -13,7 +12,7 @@ export default function Chat() {
   return (
     <div>
       {messages.map((m) => (
-        <p key={m.id} >
+        <p key={m.id}>
           {m.role === "user" ? "User: " : "AI: "}
           {m.content}
         </p>

@@ -1,5 +1,3 @@
-import "dotenv/config";
-
 import OpenAI from "openai";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 
@@ -7,7 +5,6 @@ import { LiteralClient } from "@literalai/client";
 
 const literalClient = new LiteralClient();
 
-// Create an OpenAI API client (that's edge friendly!)
 const openai = new OpenAI();
 
 export const dynamic = "force-dynamic";
@@ -42,7 +39,7 @@ export async function POST(req: Request) {
   });
 
   // Instrument the openai response to track generations
-  await literalClient.instrumentation.openai(response, run);
+  literalClient.instrumentation.openai(response, run);
 
   // Convert the response into a friendly text-stream
   const stream = OpenAIStream(response, {
