@@ -1,0 +1,3 @@
+python-dotenv>=1.0.1
+literalai>=0.0.503
+llama-index>=0.10.34
