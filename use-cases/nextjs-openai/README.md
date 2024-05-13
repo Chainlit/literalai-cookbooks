@@ -1,4 +1,4 @@
-# Build a chatbot using NextJS, Vercel ai SDK, OpenAI and Literal AI
+# Build a chatbot using NextJS, OpenAI and Literal AI
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 

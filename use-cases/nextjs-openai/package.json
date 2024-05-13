@@ -9,10 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@literalai/client": "^0.0.504",
+    "@literalai/client": "^0.0.505",
     "ai": "^3.1.1",
     "next": "14.2.3",
-    "openai": "^4.40.1",
+    "openai": "^4.40.2",
     "react": "^18",
     "react-dom": "^18"
   },
@@ -20,6 +20,8 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }
 }
