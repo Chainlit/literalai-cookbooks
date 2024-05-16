@@ -12,6 +12,7 @@ For more information, find the full documentation [here](https://docs.getliteral
 * [Context Relevancy with Ragas](/python/context-relevancy-ragas/): Build a RAG application and evaluate this with RAGAS based on context relevancy.
 * [Evaluate User Satisfaction - Customer Support Conversations](/python/evaluate-user-satisfaction/): Retrieve your Customer Support Conversations from Literal AI and evaluate user satisfaction on this conversational data.
 * [LlamaIndex Integration](/python/llamaindex-integration/): Build a Q&A application with LLamaIndex and monitor it with Literal AI.
+* [Evaluate Agent Runs with Tools](/python/evaluate-agent-runs/): Build a simple agent which can use two tools. Monitor and evaluate the tool usage.
 
 ### TypeScript
 * [Prompt Iteration with Promptfoo](/typescript/prompt-iteration-promptfoo/): Run a simple chat application and evaluate its results with two different prompt templates with Promptfoo.
