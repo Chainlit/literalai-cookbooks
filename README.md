@@ -11,13 +11,14 @@ For more information, find the full documentation [here](https://docs.getliteral
 ### Python
 | Name | Category | Description| 
 | --- | --- | --- |
-| [Context Relevancy with Ragas](/python/context-relevancy-ragas/) | Evaluation | Build a RAG application and evaluate this with RAGAS based on context relevancy.
-| [Evaluate User Satisfaction - Customer Support Conversations](/python/evaluate-user-satisfaction/) | Evaluation | Retrieve your Customer Support Conversations from Literal AI and evaluate user satisfaction on this conversational data.
-| [LlamaIndex Integration](/python/llamaindex-integration/) | Observability | Build a Q&A application with LLamaIndex and monitor it with Literal AI.
-| [Evaluate Agent Runs with Tools](/python/evaluate-agent-runs/) | Observability (Tools) & Evaluation | Build a simple agent which can use two tools. Monitor and evaluate the tool usage.
+| [Context Relevancy with Ragas](/python/context-relevancy-ragas/) | Evaluation | Build a RAG application and evaluate this with RAGAS based on context relevancy. |
+| [Evaluate User Satisfaction - Customer Support Conversations](/python/evaluate-user-satisfaction/) | Evaluation | Retrieve your Customer Support Conversations from Literal AI and evaluate user satisfaction on this conversational data. |
+| [LlamaIndex Integration](/python/llamaindex-integration/) | Observability | Build a Q&A application with LLamaIndex and monitor it with Literal AI. |
+| [Evaluate Agent Runs with Tools](/python/evaluate-agent-runs/) | Observability (Tools) & Evaluation | Build a simple agent which can use two tools. Monitor and evaluate the tool usage. |
+| [A/B Testing Client-Side](/python/ab-testing-client-side/) | Evaluation | Build two prompts, randomly assign to new conversations and A/B test on a metric. |
 
 ### TypeScript
 | Name | Category | Description| 
 | --- | --- | --- |
-| [Prompt Iteration with Promptfoo](/typescript/prompt-iteration-promptfoo/) | Evaluation | Run a simple chat application and evaluate its results with two different prompt templates with Promptfoo.
-| [Chatbot using Next.js, Vercel ai SDK, OpenAI and Literal AI](/typescript/chatbot-vercel-ai-sdk-openai/) | Observablity | Create a personalized and monitored chatbot with OpenAI, Next.js and Literal AI.
+| [Prompt Iteration with Promptfoo](/typescript/prompt-iteration-promptfoo/) | Evaluation | Run a simple chat application and evaluate its results with two different prompt templates with Promptfoo. |
+| [Chatbot using Next.js, Vercel ai SDK, OpenAI and Literal AI](/typescript/chatbot-vercel-ai-sdk-openai/) | Observablity | Create a personalized and monitored chatbot with OpenAI, Next.js and Literal AI. |
