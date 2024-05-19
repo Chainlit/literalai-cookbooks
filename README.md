@@ -1,3 +1,5 @@
+![Literal AI](/img/logoliteralai.png)
+
 # Literal AI Cookbooks and Guides
 
 Welcome to the Literal AI Cookbooks and Guides repository! This repository is dedicated to providing users with comprehensive cookbooks and guides designed to help you understand and implement AI solutions effectively.
