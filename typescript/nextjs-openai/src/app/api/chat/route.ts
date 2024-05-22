@@ -37,32 +37,8 @@ export async function POST(req: Request) {
     ...prompt.settings,
   });
 
-  // Create a step for the ai run
-  const run = thread.step({
-    type: "run",
-    name: "My Assistant Run",
-    input: { content: [...promptMessages, ...chatMessages] },
-  });
-
-  // Register the response with LiteralAI so we can track it
-  literalClient.instrumentation.openai(result, run);
-
   // Convert the response into a friendly text-stream
-  const stream = OpenAIStream(result, {
-    onCompletion: async (completion) => {
-      run.output = { content: completion };
-      await run.send();
-
-      // Save assistant message
-      await thread
-        .step({
-          type: "assistant_message",
-          name: "Bot",
-          output: { content: completion },
-        })
-        .send();
-    },
-  });
+  const stream = OpenAIStream(result);
 
   // Respond with the stream
   return new StreamingTextResponse(stream);
