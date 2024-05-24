@@ -15,3 +15,5 @@ Then, run the development server:
 ```bash
 npm run dev
 ```
+
+Your project is now accessible at http://localhost:3000

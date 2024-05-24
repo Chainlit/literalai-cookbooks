@@ -7,7 +7,7 @@ export async function POST(req: Request) {
 
   await literalClient.api.createScore({
     stepId,
-    name: "test-scoring",
+    name: "simple-chatbot-score",
     type: "HUMAN",
     value: score,
   });
