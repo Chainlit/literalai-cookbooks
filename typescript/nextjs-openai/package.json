@@ -1,5 +1,5 @@
 {
-  "name": "nextjs-chatbot",
+  "name": "nextjs-literal-chatbot",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,9 +10,9 @@
   },
   "dependencies": {
     "@literalai/client": "^0.0.505",
-    "ai": "^3.1.1",
+    "ai": "^3.1.13",
     "next": "14.2.3",
-    "openai": "^4.40.2",
+    "openai": "^4.47.1",
     "react": "^18",
     "react-dom": "^18"
   },
@@ -20,6 +20,8 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.3",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
