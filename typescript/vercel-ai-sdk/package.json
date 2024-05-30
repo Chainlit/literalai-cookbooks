@@ -1,0 +1,28 @@
+{
+  "name": "vercel-ai-sdk",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^0.0.9",
+    "@literalai/client": "^0.0.506",
+    "ai": "^3.1.1",
+    "next": "14.2.3",
+    "openai": "^4.40.1",
+    "react": "^18",
+    "react-dom": "^18",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "typescript": "^5",
+    "zod-to-json-schema": "^3.23.0"
+  }
+}
