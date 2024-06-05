@@ -23,6 +23,11 @@ type RawRow = {
   end: number;
 };
 
+/**
+ * Get raw data
+ * Download them if from the Hugging Face Datasets server
+ * Then store locally for latter use.
+ */
 const getRawData = async (): Promise<{ rows: { row: RawRow }[] }> => {
   if (fs.existsSync(RAW_DATA_PATH)) {
     const rawData = fs.readFileSync(RAW_DATA_PATH, "utf8");
@@ -34,6 +39,9 @@ const getRawData = async (): Promise<{ rows: { row: RawRow }[] }> => {
   return JSON.parse(content);
 };
 
+/**
+ * Create the embeddings table
+ */
 const createEmbeddingsTable = async (
   db: Connection,
   embedFunction: OpenAIEmbeddingFunction
@@ -45,8 +53,10 @@ const createEmbeddingsTable = async (
   return await db.createTable("vectors", data, embedFunction);
 };
 
-// Each transcript has a small text column, we include previous transcripts in order to
-// have more context information when creating embeddings
+/**
+ * Each transcript has a small text column, we include previous transcripts in order to
+ * have more context information when creating embeddings
+ */
 const contextualize = (
   rows: RawRow[],
   contextSize: number,
@@ -76,6 +86,10 @@ const contextualize = (
   return data;
 };
 
+/**
+ * Get the embeddings table
+ * Create it if it does not exist
+ */
 const getEmbeddingsTable = async (apiKey: string) => {
   // Connects to LanceDB
   const db = await connect("data/youtube-lancedb");
@@ -91,7 +105,9 @@ const getEmbeddingsTable = async (apiKey: string) => {
   }
 };
 
-// Creates a prompt by aggregating all relevant contexts
+/**
+ * Create a prompt by aggregating all relevant contexts
+ */
 const createPrompt = (query: string, context: { context: string }[]) => {
   let prompt =
     "Answer the question based on the context below.\n\n" +
@@ -108,19 +124,22 @@ const run = async () => {
   // You need to provide an OpenAI API key, here we read it from the OPENAI_API_KEY environment variable
   const apiKey = process.env.OPENAI_API_KEY!;
 
+  // Get the embeddings table
   const tbl = await getEmbeddingsTable(apiKey);
 
   // Use OpenAI Completion API to generate and answer based on the context that LanceDB provides
   const openai = new OpenAI();
 
+  // Initialize the Literal Client
   const literalClient = new LiteralClient();
+  const thread = await literalClient.thread({ name: "LanceDB RAG" }).upsert();
 
+
+  // Create a readline interface to interact with the user
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
   });
-
-  const thread = await literalClient.thread({ name: "LanceDB RAG" }).upsert();
 
   try {
     while (true) {
@@ -157,6 +176,7 @@ const run = async () => {
         presence_penalty: 0,
       });
 
+      // Use instrumentation to monitor the OpenAI call
       await literalClient.instrumentation.openai(response, runStep);
 
       runStep.output = response.choices[0].message;
