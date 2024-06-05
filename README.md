@@ -25,3 +25,4 @@ For more information, find the full documentation [here](https://docs.getliteral
 | [Prompt Iteration with Promptfoo](/typescript/prompt-iteration-promptfoo/) | Evaluation | Run a simple chat application and evaluate its results with two different prompt templates with Promptfoo. |
 | [Chatbot using Next.js, OpenAI and Literal AI](/typescript/nextjs-openai/) | Observablity | Create a personalized and monitored chatbot with OpenAI, Next.js and Literal AI. |
 | [Chatbot using Vercel ai SDK and Literal AI](/typescript/vercel-ai-sdk/) | Observablity | Create a personalized and monitored chatbot with Vercel ai SDK and Literal AI. |
+| [Simple RAG using LanceDB, OpenAI and Literal AI](/typescript/lancedb-rag) | Observability | Create Simple RAG on Youtube Transcripts stored using LanceDB
