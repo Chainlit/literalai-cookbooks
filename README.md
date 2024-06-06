@@ -23,5 +23,6 @@ For more information, find the full documentation [here](https://docs.getliteral
 | Name | Category | Description| 
 | --- | --- | --- |
 | [Prompt Iteration with Promptfoo](/typescript/prompt-iteration-promptfoo/) | Evaluation | Run a simple chat application and evaluate its results with two different prompt templates with Promptfoo. |
+| [Image Generation with Dall-E & Literal AI Attachment](/typescript/dall-e-image-generation) | Observablity | Use OpenAI Dall-E to Generate an image with a prompt and then send it to Literal AI. |
 | [Chatbot using Next.js, OpenAI and Literal AI](/typescript/nextjs-openai/) | Observablity | Create a personalized and monitored chatbot with OpenAI, Next.js and Literal AI. |
 | [Chatbot using Vercel ai SDK and Literal AI](/typescript/vercel-ai-sdk/) | Observablity | Create a personalized and monitored chatbot with Vercel ai SDK and Literal AI. |

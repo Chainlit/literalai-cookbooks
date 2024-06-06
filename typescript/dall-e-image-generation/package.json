@@ -1,0 +1,20 @@
+{
+  "name": "dall-e-3-image-generation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@literalai/client": "^0.0.506",
+    "dotenv": "^16.4.5",
+    "openai": "^4.48.3"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2"
+  }
+}
