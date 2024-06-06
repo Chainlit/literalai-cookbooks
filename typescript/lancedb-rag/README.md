@@ -4,7 +4,7 @@
 
 ## Setup
 
-To install dependencies, run from `eval-promptfoo`:
+To install dependencies:
 
 ```bash
 npm install
@@ -17,8 +17,6 @@ cp .env.example .env
 ```
 
 ## Run
-
-Run a simple chat application and evaluate its results with two different prompt templates with:
 
 ```bash
 npm run dev
