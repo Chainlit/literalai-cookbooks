@@ -70,19 +70,16 @@ const contextualize = (
     grouped[row[groupColumn]].push(row);
   });
 
-  const data: (RawRow & { context: string })[] = [];
-  Object.keys(grouped).forEach((key) => {
-    data.push(
-      ...grouped[key].map((row, i) => {
-        const start = i - contextSize > 0 ? i - contextSize : 0;
-        const context = grouped[key]
-          .slice(start, i + 1)
-          .map((r) => r.text)
-          .join(" ");
-        return { ...row, context };
-      })
-    );
-  });
+  const data = Object.keys(grouped).flatMap((key) =>
+    grouped[key].map((row, i) => {
+      const start = i - contextSize > 0 ? i - contextSize : 0;
+      const context = grouped[key]
+        .slice(start, i + 1)
+        .map((r) => r.text)
+        .join(" ");
+      return { ...row, context };
+    })
+  );
   return data;
 };
 
@@ -133,7 +130,6 @@ const run = async () => {
   // Initialize the Literal Client
   const literalClient = new LiteralClient();
   const thread = await literalClient.thread({ name: "LanceDB RAG" }).upsert();
-
 
   // Create a readline interface to interact with the user
   const rl = readline.createInterface({
