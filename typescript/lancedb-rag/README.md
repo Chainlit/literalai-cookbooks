@@ -19,5 +19,5 @@ cp .env.example .env
 ## Run
 
 ```bash
-npm run dev
+npm run start
 ```
