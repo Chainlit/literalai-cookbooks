@@ -1,0 +1,22 @@
+{
+  "name": "lancedb-rag",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@literalai/client": "^0.0.506",
+    "dotenv": "^16.4.5",
+    "node-fetch": "^3.3.2",
+    "openai": "^4.48.1",
+    "vectordb": "^0.5.0"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2"
+  }
+}
