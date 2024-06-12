@@ -5,6 +5,8 @@ import { openai } from "@ai-sdk/openai";
 import { generateText, type CoreMessage } from "ai";
 import { type Database } from "better-sqlite3";
 
+import { literalClient } from "@/lib/literal";
+
 const getSqlSchema = (db: Database) => {
   return db
     .prepare<[], { sql: string }>(
@@ -25,10 +27,15 @@ export type UserQueryResult<T = unknown> = {
   result: T[];
 };
 
-export const runUserQuery = async <T = unknown,>(
+export const runUserQuery = async <T = unknown>(
   query: string,
+  threadId: string,
   columnNames?: string[]
 ): Promise<UserQueryResult<T>> => {
+  const thread = await literalClient
+    .thread({ id: threadId, name: "Showroom" })
+    .upsert();
+
   const messages: CoreMessage[] = [
     {
       role: "system",
@@ -56,10 +63,13 @@ export const runUserQuery = async <T = unknown,>(
 
   let lastError: any = null;
   for (let attempts = 1; attempts <= 5; attempts++) {
-    const generation = await generateText({
+    const generation = await literalClient.instrumentation.vercel.instrument(
+      generateText
+    )({
       model: openai("gpt-3.5-turbo"),
       messages,
       temperature: 0.25,
+      literalAiParent: thread,
     });
 
     const query =

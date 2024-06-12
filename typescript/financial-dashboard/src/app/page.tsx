@@ -27,6 +27,7 @@ export default function Home() {
 }
 
 function ChatVersion1() {
+  const [threadId] = useState<string>(crypto.randomUUID());
   const [query, setQuery] = useState(
     "The average total order value for all orders of each user"
   );
@@ -37,7 +38,7 @@ function ChatVersion1() {
       <form
         onSubmit={async (event) => {
           event.preventDefault();
-          const response = await runUserQuery(query);
+          const response = await runUserQuery(query, threadId);
           setResponse(response);
         }}
       >
@@ -71,6 +72,8 @@ function ChatVersion1() {
 }
 
 function ChatVersion2() {
+  const [threadId] = useState<string>(crypto.randomUUID());
+
   const [conversation, setConversation] = useState<Message[]>([]);
   const [input, setInput] = useState<string>("");
 
@@ -111,7 +114,10 @@ function ChatVersion2() {
                         }
                       );
 
-                      const reponse = await continueConversation(messages);
+                      const reponse = await continueConversation(
+                        messages,
+                        threadId
+                      );
 
                       const components = [List, DataTable, BarChart];
 
@@ -187,7 +193,7 @@ function ChatVersion2() {
 
           messages.push({ role: "user", content: input });
 
-          const reponse = await continueConversation(messages);
+          const reponse = await continueConversation(messages, threadId);
 
           const components = [List, DataTable, BarChart];
 

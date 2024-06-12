@@ -9,12 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^0.0.27",
+    "@ai-sdk/openai": "^0.0.24",
+    "@literalai/client": "^0.0.507",
     "@prisma/client": "^5.15.0",
     "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-slot": "^1.0.2",
     "@tanstack/react-table": "^8.17.3",
-    "ai": "^3.1.31",
+    "ai": "^3.1.0",
     "better-sqlite3": "^11.0.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",

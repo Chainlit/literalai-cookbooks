@@ -7,6 +7,7 @@ import { streamText, tool } from "ai";
 import { createStreamableValue } from "ai/rsc";
 import { z } from "zod";
 
+import { literalClient } from "../lib/literal";
 import { runUserQuery } from "./user-query-runner";
 
 export interface Message {
@@ -20,10 +21,20 @@ export type StreamablePart =
   | { type: "text"; delta: string }
   | { type: "component"; name: string; props: any; data?: any };
 
-export async function continueConversation(history: Message[]) {
+export async function continueConversation(
+  history: Message[],
+  threadId: string
+) {
   console.log(history);
 
-  const result = await streamText({
+  const thread = await literalClient
+    .thread({ id: threadId, name: "Showroom" })
+    .upsert();
+
+  const result = await literalClient.instrumentation.vercel.instrument(
+    streamText
+  )({
+    literalAiParent: thread,
     model: openai("gpt-4o"),
     system:
       "You are a friendly data assistant. You will help the user view their data at charts and tables.",
@@ -49,6 +60,7 @@ export async function continueConversation(history: Message[]) {
         execute: async ({ query, columns }) => {
           const { result } = await runUserQuery<any>(
             query,
+            threadId,
             columns.map((c) => c.name)
           );
           return {
@@ -69,7 +81,7 @@ export async function continueConversation(history: Message[]) {
           column: z.string().describe("the name of the column in the result"),
         }),
         execute: async ({ query, column }) => {
-          const { result } = await runUserQuery<any>(query, [column]);
+          const { result } = await runUserQuery<any>(query, threadId, [column]);
           return {
             name: "List",
             props: { values: result.map((row) => row[column]) },
@@ -94,7 +106,7 @@ export async function continueConversation(history: Message[]) {
             .describe("the name of the column with the value in the result"),
         }),
         execute: async ({ query, labelColumn, valueColumn }) => {
-          const { result } = await runUserQuery<any>(query, [
+          const { result } = await runUserQuery<any>(query, threadId, [
             labelColumn,
             valueColumn,
           ]);
