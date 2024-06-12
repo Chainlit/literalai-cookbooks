@@ -76,10 +76,6 @@ function ChatVersion2() {
 
   const [aiContext, setAiContext] = useState<any>(null);
 
-  useEffect(() => {
-    console.log({ aiContext });
-  }, [aiContext]);
-
   return (
     <>
       {conversation.map((message, index) => (
@@ -88,7 +84,78 @@ function ChatVersion2() {
             <UserMessage className="mb-2">{message.content}</UserMessage>
           ) : null}
           {message.role === "assistant" ? (
-            <BotMessage className="mb-2">
+            <BotMessage
+              className="mb-2"
+              onExplain={
+                message.data
+                  ? async () => {
+                      const messages = conversation.map(
+                        // exclude React components from being sent back to the server:
+                        ({ role, content, data }) => ({
+                          role,
+                          content: [content, data ? JSON.stringify(data) : null]
+                            .filter(Boolean)
+                            .join("\n"),
+                        })
+                      );
+
+                      messages.push(
+                        {
+                          role: "system",
+                          content:
+                            "With this context:" + JSON.stringify(message.data),
+                        },
+                        {
+                          role: "user",
+                          content: "Explain this",
+                        }
+                      );
+
+                      const reponse = await continueConversation(messages);
+
+                      const components = [List, DataTable, BarChart];
+
+                      setAiContext(null);
+                      setInput("");
+                      setConversation([
+                        ...conversation,
+                        { role: "user", content: input },
+                      ]);
+
+                      let content = "";
+                      let display: React.ReactNode = null;
+                      let data: any = undefined;
+                      for await (const chunk of readStreamableValue(reponse)) {
+                        switch (chunk?.type) {
+                          case "text": {
+                            content += chunk.delta;
+                            break;
+                          }
+                          case "component": {
+                            data = chunk.data;
+                            const Component = components.find(
+                              (component) => component.name === chunk.name
+                            );
+                            if (Component) {
+                              display = (
+                                <Component
+                                  {...chunk.props}
+                                  onContextChange={setAiContext}
+                                />
+                              );
+                            }
+                            break;
+                          }
+                        }
+                        setConversation([
+                          ...conversation,
+                          { role: "assistant", content, display, data },
+                        ]);
+                      }
+                    }
+                  : undefined
+              }
+            >
               {message.content}
               {message.display}
             </BotMessage>
