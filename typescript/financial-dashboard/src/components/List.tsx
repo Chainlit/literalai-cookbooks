@@ -1,5 +1,6 @@
 type Props = {
   values: (string | number)[];
+  onContextChange?: (context: any) => void;
 };
 
 export const List: React.FC<Props> = ({ values }) => {

@@ -10,7 +10,7 @@ import { z } from "zod";
 import { runUserQuery } from "./user-query-runner";
 
 export interface Message {
-  role: "user" | "assistant";
+  role: "user" | "assistant" | "system";
   content: string;
   display?: ReactNode;
   data?: any;
@@ -21,16 +21,13 @@ export type StreamablePart =
   | { type: "component"; name: string; props: any; data?: any };
 
 export async function continueConversation(history: Message[]) {
+  console.log(history);
+
   const result = await streamText({
     model: openai("gpt-4o"),
     system:
       "You are a friendly data assistant. You will help the user view their data at charts and tables.",
-    messages: history.map((message) => ({
-      ...message,
-      content: [message.content, message.data ? JSON.stringify(message) : null]
-        .filter(Boolean)
-        .join("\n\n"),
-    })),
+    messages: history,
     temperature: 0.5,
     toolChoice: "auto",
     tools: {
@@ -55,7 +52,7 @@ export async function continueConversation(history: Message[]) {
             columns.map((c) => c.name)
           );
           return {
-            name: "Table",
+            name: "DataTable",
             props: { columns, rows: result },
             data: result,
           };

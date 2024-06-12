@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 
 import {
   continueConversation,
@@ -14,8 +14,8 @@ import { readStreamableValue } from "ai/rsc";
 
 import { BotMessage, UserMessage } from "@/components/atoms/messages";
 import { BarChart } from "@/components/BarChart";
+import { DataTable } from "@/components/DataTable";
 import { List } from "@/components/List";
-import { Table } from "@/components/Table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -74,6 +74,12 @@ function ChatVersion2() {
   const [conversation, setConversation] = useState<Message[]>([]);
   const [input, setInput] = useState<string>("");
 
+  const [aiContext, setAiContext] = useState<any>(null);
+
+  useEffect(() => {
+    console.log({ aiContext });
+  }, [aiContext]);
+
   return (
     <>
       {conversation.map((message, index) => (
@@ -95,19 +101,32 @@ function ChatVersion2() {
         onSubmit={async (event) => {
           event.preventDefault();
 
-          const reponse = await continueConversation([
+          const messages = conversation.map(
             // exclude React components from being sent back to the server:
-            ...conversation.map(({ display, ...message }) => message),
-            { role: "user", content: input },
-          ]);
+            ({ role, content, data }) => ({
+              role,
+              content: [content, data ? JSON.stringify(data) : null]
+                .filter(Boolean)
+                .join("\n"),
+            })
+          );
 
-          const components = [List, Table, BarChart];
+          if (aiContext) {
+            messages.push({
+              role: "system",
+              content: "With this context:" + JSON.stringify(aiContext),
+            });
+          }
 
+          messages.push({ role: "user", content: input });
+
+          const reponse = await continueConversation(messages);
+
+          const components = [List, DataTable, BarChart];
+
+          setAiContext(null);
           setInput("");
-          setConversation(() => [
-            ...conversation,
-            { role: "user", content: input },
-          ]);
+          setConversation([...conversation, { role: "user", content: input }]);
 
           let content = "";
           let display: React.ReactNode = null;
@@ -124,12 +143,17 @@ function ChatVersion2() {
                   (component) => component.name === chunk.name
                 );
                 if (Component) {
-                  display = <Component {...chunk.props} />;
+                  display = (
+                    <Component
+                      {...chunk.props}
+                      onContextChange={setAiContext}
+                    />
+                  );
                 }
                 break;
               }
             }
-            setConversation(() => [
+            setConversation([
               ...conversation,
               { role: "user", content: input },
               { role: "assistant", content, display, data },

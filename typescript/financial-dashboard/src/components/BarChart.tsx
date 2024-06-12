@@ -1,14 +1,13 @@
-'use client';
+"use client";
 
 import {
-
-  CartesianGrid,
-  BarChart as BaseBarChart,
   Bar,
+  BarChart as BaseBarChart,
+  CartesianGrid,
   Legend,
   Tooltip,
-  YAxis,
   XAxis,
+  YAxis,
 } from "recharts";
 
 type Props = {
@@ -16,9 +15,10 @@ type Props = {
     name: string;
     value: number;
   }[];
+  onContextChange?: (context: any) => void;
 };
 
-export const BarChart: React.FC<Props> = ({ entries }) => {
+export const BarChart: React.FC<Props> = ({ entries, onContextChange }) => {
   return (
     <BaseBarChart width={730} height={250} data={entries}>
       <CartesianGrid strokeDasharray="3 3" />
@@ -26,7 +26,12 @@ export const BarChart: React.FC<Props> = ({ entries }) => {
       <YAxis />
       <Tooltip />
       <Legend />
-      <Bar dataKey="value" />
+      <Bar
+        dataKey="value"
+        onClick={(data) => {
+          onContextChange?.({ lasClicked: data.payload });
+        }}
+      />
     </BaseBarChart>
   );
 };
