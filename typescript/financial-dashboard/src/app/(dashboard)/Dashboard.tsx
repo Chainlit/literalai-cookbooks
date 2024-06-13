@@ -1,3 +1,5 @@
+"use client";
+
 import { MonthlyRevenues } from "./MonthlyRevenues";
 import { RecentSales } from "./RecentSales";
 

@@ -24,7 +24,7 @@ export const RecentSales: React.FC = () => {
     <Card>
       <CardHeader className="flex flex-row gap-3 space-y-0">
         <CardTitle className="flex-1">Recent Sales</CardTitle>
-        <AiCopilotButton />
+        <AiCopilotButton context={sales} />
       </CardHeader>
       <CardContent className="grid gap-8">
         {error ? <ErrorBlock error={error} /> : null}

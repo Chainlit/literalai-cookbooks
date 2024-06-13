@@ -1,32 +1,21 @@
 "use server";
 
-import type { ReactNode } from "react";
-
 import { openai } from "@ai-sdk/openai";
-import { streamText, tool } from "ai";
+import { CoreMessage, streamText, tool } from "ai";
 import { createStreamableValue } from "ai/rsc";
 import { z } from "zod";
 
 import { literalClient } from "../lib/literal";
 import { runUserQuery } from "./user-query-runner";
 
-export interface Message {
-  role: "user" | "assistant" | "system";
-  content: string;
-  display?: ReactNode;
-  data?: any;
-}
-
 export type StreamablePart =
   | { type: "text"; delta: string }
   | { type: "component"; name: string; props: any; data?: any };
 
 export async function continueConversation(
-  history: Message[],
+  history: CoreMessage[],
   threadId: string
 ) {
-  console.log(history);
-
   const thread = await literalClient
     .thread({ id: threadId, name: "Showroom" })
     .upsert();
@@ -126,24 +115,5 @@ export async function continueConversation(
     },
   });
 
-  const stream = createStreamableValue<StreamablePart>();
-
-  // Non blocking
-  (async () => {
-    for await (const chunk of result.fullStream) {
-      switch (chunk.type) {
-        case "text-delta": {
-          stream.update({ type: "text", delta: chunk.textDelta });
-          break;
-        }
-        case "tool-result": {
-          stream.update({ type: "component", ...chunk.result });
-          break;
-        }
-      }
-    }
-    stream.done();
-  })();
-
-  return stream.value;
+  return createStreamableValue(result.fullStream).value;
 }
