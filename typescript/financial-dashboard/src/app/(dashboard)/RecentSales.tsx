@@ -1,16 +1,22 @@
 "use client";
 
+import { useState } from "react";
+
 import { useQuery } from "@tanstack/react-query";
 
 import { ErrorBlock } from "@/components/atoms/error";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
+import { cn } from "@/lib/utils";
+
 import { formatCurrency } from "../../lib/formatter";
 import { AiCopilotButton } from "./AiCopilotButton";
 import { getRecentSales } from "./queries";
 
 export const RecentSales: React.FC = () => {
+  const [aiActive, setAiActive] = useState(false);
+
   const {
     data: sales,
     error,
@@ -21,10 +27,10 @@ export const RecentSales: React.FC = () => {
   });
 
   return (
-    <Card>
+    <Card className={cn(aiActive ? "outline outline-blue-300" : "")}>
       <CardHeader className="flex flex-row gap-3 space-y-0">
         <CardTitle className="flex-1">Recent Sales</CardTitle>
-        <AiCopilotButton context={sales} />
+        <AiCopilotButton context={sales} onActiveChange={setAiActive} />
       </CardHeader>
       <CardContent className="grid gap-8">
         {error ? <ErrorBlock error={error} /> : null}

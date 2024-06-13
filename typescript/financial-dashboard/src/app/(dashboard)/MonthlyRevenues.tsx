@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { useQuery } from "@tanstack/react-query";
 import {
   Bar,
@@ -23,13 +25,16 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { formatCurrency, monthFormatter } from "@/lib/formatter";
+import { cn } from "@/lib/utils";
 
 import { AiCopilotButton } from "./AiCopilotButton";
 import { getMonthlyRevenues } from "./queries";
 
 type Props = React.ComponentProps<typeof Card>;
 
-export const MonthlyRevenues: React.FC<Props> = ({ ...props }) => {
+export const MonthlyRevenues: React.FC<Props> = ({ className, ...props }) => {
+  const [aiActive, setAiActive] = useState(false);
+
   const {
     data: revenues,
     error,
@@ -40,13 +45,16 @@ export const MonthlyRevenues: React.FC<Props> = ({ ...props }) => {
   });
 
   return (
-    <Card {...props}>
+    <Card
+      {...props}
+      className={cn(className, aiActive ? "outline outline-blue-300" : "")}
+    >
       <CardHeader className="flex flex-row space-y-0">
         <div className="grid flex-1 gap-2">
           <CardTitle>Monthly Revenues</CardTitle>
           <CardDescription>Revenues for the last 12 months.</CardDescription>
         </div>
-        <AiCopilotButton context={revenues} />
+        <AiCopilotButton context={revenues} onActiveChange={setAiActive} />
       </CardHeader>
       <CardContent>
         {error ? <ErrorBlock error={error} /> : null}

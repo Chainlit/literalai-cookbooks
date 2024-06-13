@@ -8,6 +8,7 @@ import Link from "next/link";
 import { HomeIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+
 import RootLayoutClient from "./layout-client";
 
 const fontSans = FontSans({
@@ -30,6 +31,7 @@ export default function RootLayout({
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
+          "[&>main]:min-h-[calc(100vh_-_theme(spacing.16))]",
           fontSans.variable
         )}
       >
@@ -56,9 +58,7 @@ export default function RootLayout({
             </Link>
           </nav>
         </header>
-        <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col bg-muted/40 p-4 md:p-10">
-          <RootLayoutClient>{children}</RootLayoutClient>
-        </main>
+        <RootLayoutClient>{children}</RootLayoutClient>
       </body>
     </html>
   );

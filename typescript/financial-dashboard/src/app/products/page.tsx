@@ -23,7 +23,7 @@ export default async function ProductListPage() {
     .execute();
 
   return (
-    <>
+    <main className="space-y-3 bg-muted/40 p-4 md:p-10">
       <h2 className="text-2xl">Products</h2>
       <Table>
         <TableHeader>
@@ -47,6 +47,6 @@ export default async function ProductListPage() {
           ))}
         </TableBody>
       </Table>
-    </>
+    </main>
   );
 }

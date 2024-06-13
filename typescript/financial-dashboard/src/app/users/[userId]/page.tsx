@@ -78,7 +78,7 @@ export default async function UserPage({ params }: PageProps) {
   }
 
   return (
-    <>
+    <main className="space-y-3 bg-muted/40 p-4 md:p-10">
       <h2 className="text-2xl">Users - {user.name}</h2>
 
       <section>
@@ -152,6 +152,6 @@ export default async function UserPage({ params }: PageProps) {
           </article>
         ))}
       </section>
-    </>
+    </main>
   );
 }

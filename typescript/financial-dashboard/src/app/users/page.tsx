@@ -25,7 +25,7 @@ export default async function UserListPage() {
     .execute();
 
   return (
-    <>
+    <main className="space-y-3 bg-muted/40 p-4 md:p-10">
       <h2 className="text-2xl">Users</h2>
       <Table>
         <TableHeader>
@@ -49,6 +49,6 @@ export default async function UserListPage() {
           ))}
         </TableBody>
       </Table>
-    </>
+    </main>
   );
 }
