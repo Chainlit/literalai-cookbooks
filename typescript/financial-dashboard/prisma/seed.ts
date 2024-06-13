@@ -12,7 +12,7 @@ async function generateUsers() {
     data: names.map((name) => ({
       name,
       email: `${name.toLowerCase()}@example.com`,
-      createdAt: randomDateSince(new Date("2020-01-01")),
+      createdAt: randomDateSince(new Date("2020-01-01")).toISOString(),
     })),
   });
 }
@@ -53,7 +53,7 @@ async function generateOrders() {
             })),
           },
         },
-        createdAt: randomDateSince(user.createdAt),
+        createdAt: randomDateSince(new Date(user.createdAt)).toISOString(),
       },
     });
   }

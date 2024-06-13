@@ -1,11 +1,8 @@
 "use client";
 
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useState } from "react";
 
-import {
-  continueConversation,
-  type Message,
-} from "@/actions/continue-conversation";
+import { continueConversation } from "@/actions/continue-conversation";
 import {
   runUserQuery,
   type UserQueryResult,
@@ -19,11 +16,20 @@ import { List } from "@/components/List";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
+import { Dashboard } from "./(dashboard)/Dashboard";
+
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
 
 export default function Home() {
-  return <ChatVersion2 />;
+  return <Dashboard />;
+}
+
+interface Message {
+  role: "user" | "assistant" | "system";
+  content: string;
+  display?: React.ReactNode;
+  data?: any;
 }
 
 function ChatVersion1() {
@@ -133,23 +139,23 @@ function ChatVersion2() {
                       let data: any = undefined;
                       for await (const chunk of readStreamableValue(reponse)) {
                         switch (chunk?.type) {
-                          case "text": {
-                            content += chunk.delta;
+                          case "text-delta": {
+                            content += chunk.textDelta;
                             break;
                           }
-                          case "component": {
-                            data = chunk.data;
-                            const Component = components.find(
-                              (component) => component.name === chunk.name
-                            );
-                            if (Component) {
-                              display = (
-                                <Component
-                                  {...chunk.props}
-                                  onContextChange={setAiContext}
-                                />
-                              );
-                            }
+                          case "tool-result": {
+                            // data = chunk.data;
+                            // const Component = components.find(
+                            //   (component) => component.name === chunk.name
+                            // );
+                            // if (Component) {
+                            //   display = (
+                            //     <Component
+                            //       {...chunk.props}
+                            //       onContextChange={setAiContext}
+                            //     />
+                            //   );
+                            // }
                             break;
                           }
                         }
@@ -206,23 +212,23 @@ function ChatVersion2() {
           let data: any = undefined;
           for await (const chunk of readStreamableValue(reponse)) {
             switch (chunk?.type) {
-              case "text": {
-                content += chunk.delta;
+              case "text-delta": {
+                content += chunk.textDelta;
                 break;
               }
-              case "component": {
-                data = chunk.data;
-                const Component = components.find(
-                  (component) => component.name === chunk.name
-                );
-                if (Component) {
-                  display = (
-                    <Component
-                      {...chunk.props}
-                      onContextChange={setAiContext}
-                    />
-                  );
-                }
+              case "tool-result": {
+                // data = chunk.data;
+                // const Component = components.find(
+                //   (component) => component.name === chunk.name
+                // );
+                // if (Component) {
+                //   display = (
+                //     <Component
+                //       {...chunk.props}
+                //       onContextChange={setAiContext}
+                //     />
+                //   );
+                // }
                 break;
               }
             }

@@ -3,7 +3,7 @@ CREATE TABLE "User" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "email" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    "createdAt" TEXT NOT NULL
 );
 
 -- CreateTable
@@ -16,7 +16,7 @@ CREATE TABLE "Product" (
 -- CreateTable
 CREATE TABLE "Order" (
     "id" TEXT NOT NULL PRIMARY KEY,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     CONSTRAINT "Order_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );

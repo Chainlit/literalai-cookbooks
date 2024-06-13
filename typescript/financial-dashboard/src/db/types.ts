@@ -6,7 +6,7 @@ export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export type Order = {
     id: string;
-    createdAt: Generated<string>;
+    createdAt: string;
     userId: string;
 };
 export type OrderEntry = {
@@ -23,7 +23,7 @@ export type User = {
     id: string;
     email: string;
     name: string;
-    createdAt: Generated<string>;
+    createdAt: string;
 };
 export type DB = {
     Order: Order;

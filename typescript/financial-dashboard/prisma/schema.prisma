@@ -22,10 +22,11 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
+  id        String  @id @default(uuid())
+  email     String  @unique
   name      String
-  createdAt DateTime @default(now())
+  // FIXME DateTime is poorly supported in SQLite
+  createdAt String
   Order     Order[]
 }
 
@@ -38,7 +39,8 @@ model Product {
 
 model Order {
   id         String       @id @default(uuid())
-  createdAt  DateTime     @default(now())
+  // FIXME DateTime is poorly supported in SQLite
+  createdAt  String
   userId     String
   user       User         @relation(fields: [userId], references: [id])
   OrderEntry OrderEntry[]
