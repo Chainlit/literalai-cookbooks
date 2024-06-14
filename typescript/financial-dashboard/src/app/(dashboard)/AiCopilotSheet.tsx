@@ -3,28 +3,14 @@ import { useRef, useState } from "react";
 import { continueConversationWithData } from "@/actions";
 import { CoreMessage } from "ai";
 import { readStreamableValue } from "ai/rsc";
-import { ArrowRightIcon, SparklesIcon } from "lucide-react";
+import { ArrowRightIcon } from "lucide-react";
 
 import { BarChart } from "@/components/BarChart";
 import { DataTable } from "@/components/DataTable";
 import { List } from "@/components/List";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 import { useAiCopilotContext } from "./AiCopilotProvider";
 
@@ -177,55 +163,5 @@ export const AiCopilotSheet: React.FC = () => {
         </SheetContent>
       </Sheet>
     </>
-  );
-
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button size="icon" variant="outline" className="size-8" title="Ask AI">
-          <SparklesIcon className="size-5" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[300px] p-0">
-        <section
-          ref={scrollContainer}
-          className="max-h-[300px] overflow-y-auto overflow-x-hidden border-b p-1 empty:hidden"
-        >
-          {history.map((message, index) => (
-            <div
-              key={index}
-              className="relative cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-slate-100 hover:text-slate-900 data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
-            >
-              <h6 className="text-xs text-muted-foreground">{message.role}</h6>
-              {message.content ? <p>{message.content}</p> : null}
-              {message.display}
-            </div>
-          ))}
-        </section>
-        <form
-          className="flex items-center gap-2 px-3"
-          onSubmit={(ev) => {
-            ev.preventDefault();
-            handle();
-          }}
-        >
-          <SparklesIcon className="size-4 shrink-0 opacity-50" />
-          <input
-            className="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
-            placeholder="Ask AI..."
-            value={query}
-            onChange={(ev) => setQuery(ev.target.value)}
-          />
-          <Button
-            type="submit"
-            variant="secondary"
-            size="icon"
-            className="size-7 shrink-0 rounded-full"
-          >
-            <ArrowRightIcon className="size-4 shrink-0" />
-          </Button>
-        </form>
-      </PopoverContent>
-    </Popover>
   );
 };
