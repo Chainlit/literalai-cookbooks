@@ -2,40 +2,44 @@
 
 import { rawDatabase as db } from "@/db";
 import { openai } from "@ai-sdk/openai";
-import { generateText, type CoreMessage } from "ai";
+import { Step, Thread } from "@literalai/client";
+import {
+  generateText as generateTextWithoutMonitoring,
+  type CoreMessage,
+} from "ai";
 import { type Database } from "better-sqlite3";
 
 import { literalClient } from "@/lib/literal";
+
+const generateText = literalClient.instrumentation.vercel.instrument(
+  generateTextWithoutMonitoring
+);
 
 const getSqlSchema = (db: Database) => {
   return db
     .prepare<[], { sql: string }>(
       `
-    SELECT sql
-    FROM sqlite_master
-    WHERE type = 'table' AND name IN ('User', 'Order', 'OrderEntry', 'Product');
-    `
+        SELECT sql
+        FROM sqlite_master
+        WHERE type = 'table' AND name IN ('User', 'Order', 'OrderEntry', 'Product');
+        `
     )
     .all()
     .map((row) => row.sql ?? "")
     .join("\n\n");
 };
 
-export type UserQueryResult<T = unknown> = {
+export type QueryResult<T = unknown> = {
   query: string;
   attempts: number;
   result: T[];
 };
 
-export const runUserQuery = async <T = unknown>(
+export const queryDatabase = async <T = unknown>(
+  literalAiParent: Thread | Step,
   query: string,
-  threadId: string,
   columnNames?: string[]
-): Promise<UserQueryResult<T>> => {
-  const thread = await literalClient
-    .thread({ id: threadId, name: "Showroom" })
-    .upsert();
-
+): Promise<QueryResult<T>> => {
   const messages: CoreMessage[] = [
     {
       role: "system",
@@ -63,13 +67,11 @@ export const runUserQuery = async <T = unknown>(
 
   let lastError: any = null;
   for (let attempts = 1; attempts <= 5; attempts++) {
-    const generation = await literalClient.instrumentation.vercel.instrument(
-      generateText
-    )({
+    const generation = await generateText({
+      literalAiParent,
       model: openai("gpt-3.5-turbo"),
       messages,
       temperature: 0.25,
-      literalAiParent: thread,
     });
 
     const query =

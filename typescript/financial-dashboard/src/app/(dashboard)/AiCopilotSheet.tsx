@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 
-import { continueConversation } from "@/actions/continue-conversation";
+import { continueConversationWithData } from "@/actions";
 import { CoreMessage } from "ai";
 import { readStreamableValue } from "ai/rsc";
 import { ArrowRightIcon, SparklesIcon } from "lucide-react";
@@ -82,7 +82,7 @@ export const AiCopilotSheet: React.FC = () => {
     setQuery("");
     setHistory([...history, userMessage]);
 
-    const reponse = await continueConversation(messages, threadId);
+    const reponse = await continueConversationWithData(messages, threadId);
 
     const botMessages: Message[] = [];
     for await (const chunk of readStreamableValue(reponse)) {
@@ -110,7 +110,7 @@ export const AiCopilotSheet: React.FC = () => {
           if (Component) {
             botMessages.push({
               role: "assistant",
-              data: chunk.result.data,
+              data: chunk.result,
               display: <Component {...(chunk.result.props as any)} />,
             });
           }

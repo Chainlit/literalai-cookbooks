@@ -1,29 +1,36 @@
 "use server";
 
 import { openai } from "@ai-sdk/openai";
-import { CoreMessage, streamText, tool } from "ai";
-import { createStreamableValue } from "ai/rsc";
+import { Step, Thread } from "@literalai/client";
+import {
+  CoreMessage,
+  streamText as streamTextWithoutMonitoring,
+  tool,
+} from "ai";
 import { z } from "zod";
 
-import { literalClient } from "../lib/literal";
-import { runUserQuery } from "./user-query-runner";
+import { literalClient } from "@/lib/literal";
 
-export type StreamablePart =
-  | { type: "text"; delta: string }
-  | { type: "component"; name: string; props: any; data?: any };
+import { queryDatabase } from "./sql-query";
 
-export async function continueConversation(
-  history: CoreMessage[],
-  threadId: string
-) {
-  const thread = await literalClient
-    .thread({ id: threadId, name: "Showroom" })
-    .upsert();
+const streamText = literalClient.instrumentation.vercel.instrument(
+  streamTextWithoutMonitoring
+);
 
-  const result = await literalClient.instrumentation.vercel.instrument(
-    streamText
-  )({
-    literalAiParent: thread,
+export const streamChatWithData = async (
+  literalAiParent: Thread | Step,
+  history: CoreMessage[]
+) => {
+  const queryDatabaseSimple = async (query: string, columnNames?: string[]) => {
+    const step = await literalAiParent
+      .step({ type: "tool", name: "Query Database" })
+      .send();
+    const { result } = await queryDatabase<any>(step, query, columnNames);
+    return result;
+  };
+
+  const result = await streamText({
+    literalAiParent,
     model: openai("gpt-4o"),
     system:
       "You are a friendly data assistant. You will help the user view their data at charts and tables.",
@@ -47,15 +54,13 @@ export async function continueConversation(
           ),
         }),
         execute: async ({ query, columns }) => {
-          const { result } = await runUserQuery<any>(
+          const result = await queryDatabaseSimple(
             query,
-            threadId,
             columns.map((c) => c.name)
           );
           return {
             name: "DataTable",
             props: { columns, rows: result },
-            data: result,
           };
         },
       }),
@@ -70,11 +75,10 @@ export async function continueConversation(
           column: z.string().describe("the name of the column in the result"),
         }),
         execute: async ({ query, column }) => {
-          const { result } = await runUserQuery<any>(query, threadId, [column]);
+          const result = await queryDatabaseSimple(query, [column]);
           return {
             name: "List",
             props: { values: result.map((row) => row[column]) },
-            data: result,
           };
         },
       }),
@@ -95,7 +99,7 @@ export async function continueConversation(
             .describe("the name of the column with the value in the result"),
         }),
         execute: async ({ query, labelColumn, valueColumn }) => {
-          const { result } = await runUserQuery<any>(query, threadId, [
+          const result = await queryDatabaseSimple(query, [
             labelColumn,
             valueColumn,
           ]);
@@ -108,12 +112,11 @@ export async function continueConversation(
                 value: row[valueColumn],
               })),
             },
-            data: result,
           };
         },
       }),
     },
   });
 
-  return createStreamableValue(result.fullStream).value;
-}
+  return result.fullStream;
+};
