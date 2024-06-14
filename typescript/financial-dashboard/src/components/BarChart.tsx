@@ -5,6 +5,7 @@ import {
   BarChart as BaseBarChart,
   CartesianGrid,
   Legend,
+  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
@@ -20,19 +21,21 @@ type Props = {
 
 export const BarChart: React.FC<Props> = ({ entries, onContextChange }) => {
   return (
-    <BaseBarChart width={730} height={250} data={entries}>
-      <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="name" />
-      <YAxis />
-      <Tooltip />
-      <Legend />
-      <Bar
-        dataKey="value"
-        onClick={(data) => {
-          onContextChange?.({ lasClicked: data.payload });
-        }}
-      />
-    </BaseBarChart>
+    <ResponsiveContainer width="100%" height={300} className="bg-background">
+      <BaseBarChart data={entries}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="name" />
+        <YAxis />
+        <Tooltip />
+        <Legend />
+        <Bar
+          dataKey="value"
+          onClick={(data) => {
+            onContextChange?.({ lasClicked: data.payload });
+          }}
+        />
+      </BaseBarChart>
+    </ResponsiveContainer>
   );
 };
 BarChart.displayName = "BarChart";

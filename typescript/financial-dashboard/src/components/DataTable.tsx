@@ -14,7 +14,6 @@ import {
 import { ArrowUpDownIcon } from "lucide-react";
 
 import { Button } from "./ui/button";
-import { Checkbox } from "./ui/checkbox";
 import {
   Table,
   TableBody,
@@ -40,51 +39,25 @@ export const DataTable: React.FC<Props> = ({
 
   const table = useReactTable({
     data: rows,
-    columns: [
-      {
-        id: "select",
-        header: ({ table }) => (
-          <Checkbox
-            checked={
-              table.getIsAllPageRowsSelected() ||
-              (table.getIsSomePageRowsSelected() && "indeterminate")
-            }
-            onCheckedChange={(value) =>
-              table.toggleAllPageRowsSelected(!!value)
-            }
-            aria-label="Select all"
-          />
-        ),
-        cell: ({ row }) => (
-          <Checkbox
-            checked={row.getIsSelected()}
-            onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label="Select row"
-          />
-        ),
-        enableSorting: false,
-        enableHiding: false,
-      },
-      ...columns.map(
-        ({ name: key, label }): ColumnDef<any> => ({
-          accessorKey: key,
-          header: ({ column }) => {
-            return (
-              <Button
-                variant="ghost"
-                onClick={() =>
-                  column.toggleSorting(column.getIsSorted() === "asc")
-                }
-              >
-                {label}
-                <ArrowUpDownIcon className="ml-2 h-4 w-4" />
-              </Button>
-            );
-          },
-          enableSorting: true,
-        })
-      ),
-    ],
+    columns: columns.map(
+      ({ name: key, label }): ColumnDef<any> => ({
+        accessorKey: key,
+        header: ({ column }) => {
+          return (
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            >
+              {label}
+              <ArrowUpDownIcon className="ml-2 h-4 w-4" />
+            </Button>
+          );
+        },
+        enableSorting: true,
+      })
+    ),
     onSortingChange: setSorting,
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
@@ -97,11 +70,20 @@ export const DataTable: React.FC<Props> = ({
 
   useEffect(() => {
     const selected = Object.keys(rowSelection).map((key) => rows[Number(key)]);
-    onContextChange?.(selected.length ? { selected } : null);
+    onContextChange?.(
+      selected.length
+        ? {
+            label: `Selected columns: ${Object.keys(rowSelection)
+              .map((n) => Number(n) + 1)
+              .join(", ")}`,
+            selected,
+          }
+        : null
+    );
   }, [rowSelection]);
 
   return (
-    <div className="rounded-md border">
+    <div className="rounded-md border bg-background">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -127,6 +109,7 @@ export const DataTable: React.FC<Props> = ({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
+                onClick={() => row.toggleSelected()}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>

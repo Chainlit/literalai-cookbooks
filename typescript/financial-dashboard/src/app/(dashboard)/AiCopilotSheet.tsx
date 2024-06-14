@@ -52,7 +52,7 @@ const formatMessages = (
 };
 
 export const AiCopilotSheet: React.FC = () => {
-  const { open, setOpen, context } = useAiCopilotContext();
+  const { open, setOpen, context, setContext } = useAiCopilotContext();
 
   const contextLabel =
     context instanceof Object && "label" in context
@@ -104,7 +104,7 @@ export const AiCopilotSheet: React.FC = () => {
             botMessages.push({
               role: "assistant",
               data: chunk.result,
-              display: <Component {...(chunk.result.props as any)} />,
+              display: <Component {...(chunk.result.props as any)} onContextChange={setContext} />,
             });
           }
           break;
