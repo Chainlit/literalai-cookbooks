@@ -30,7 +30,10 @@ export const RecentSales: React.FC = () => {
     <Card className={cn(aiActive ? "outline outline-blue-300" : "")}>
       <CardHeader className="flex flex-row gap-3 space-y-0">
         <CardTitle className="flex-1">Recent Sales</CardTitle>
-        <AiCopilotButton context={sales} onActiveChange={setAiActive} />
+        <AiCopilotButton
+          context={{ label: "recent sales", sales }}
+          onActiveChange={setAiActive}
+        />
       </CardHeader>
       <CardContent className="grid gap-8">
         {error ? <ErrorBlock error={error} /> : null}

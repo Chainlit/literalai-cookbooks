@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import { continueConversationWithData } from "@/actions";
 import { CoreMessage } from "ai";
 import { readStreamableValue } from "ai/rsc";
-import { ArrowRightIcon } from "lucide-react";
+import { ArrowRightIcon, CornerDownRightIcon } from "lucide-react";
 
 import { BarChart } from "@/components/BarChart";
 import { DataTable } from "@/components/DataTable";
@@ -11,6 +11,8 @@ import { List } from "@/components/List";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+
+import { cn } from "@/lib/utils";
 
 import { useAiCopilotContext } from "./AiCopilotProvider";
 
@@ -51,6 +53,11 @@ const formatMessages = (
 
 export const AiCopilotSheet: React.FC = () => {
   const { open, setOpen, context } = useAiCopilotContext();
+
+  const contextLabel =
+    context instanceof Object && "label" in context
+      ? String(context.label)
+      : null;
 
   const [threadId] = useState<string>(crypto.randomUUID());
   const [history, setHistory] = useState<Message[]>([]);
@@ -138,24 +145,30 @@ export const AiCopilotSheet: React.FC = () => {
               </div>
             ))}
           </section>
+
           <form
-            className="flex items-center gap-2"
+            className="relative flex shrink-0 flex-col items-center"
             onSubmit={(ev) => {
               ev.preventDefault();
               handle();
             }}
           >
+            {contextLabel ? (
+              <p className="flex h-7 w-full shrink-0 items-center gap-1 rounded-t-md bg-blue-50 px-3 text-xs text-blue-600">
+                <CornerDownRightIcon className="size-3" /> With {contextLabel}
+              </p>
+            ) : null}
             <Input
               placeholder="Ask AI..."
-              className="h-7 flex-1"
+              className={cn("block h-8", contextLabel ? "rounded-t-none" : "")}
               value={query}
               onChange={(ev) => setQuery(ev.target.value)}
             />
             <Button
               type="submit"
-              variant="secondary"
+              variant="ghost"
               size="icon"
-              className="size-7 shrink-0 rounded-full"
+              className="absolute bottom-1 right-2 size-6 shrink-0 rounded-full"
             >
               <ArrowRightIcon className="size-4 shrink-0" />
             </Button>
