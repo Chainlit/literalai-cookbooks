@@ -1,6 +1,6 @@
 import { LiteralClient } from "@literalai/client";
 import { NextRequest, NextResponse } from "next/server";
-import OpenAI, { toFile } from "openai";
+import OpenAI from "openai";
 
 const openai = new OpenAI();
 const literalClient = new LiteralClient();

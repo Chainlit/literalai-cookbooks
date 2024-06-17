@@ -102,6 +102,10 @@ export default function Home() {
           </pre>
         )}
       </section>
+      <footer className="fixed top-0 left-0 font-mono">
+        Made with 💝 by the fine people @{" "}
+        <a href="https://literalai.com/">Literal AI</a>
+      </footer>
     </main>
   );
 }

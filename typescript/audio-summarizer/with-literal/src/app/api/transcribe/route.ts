@@ -74,6 +74,12 @@ export async function POST(req: NextRequest) {
       attachments: [attachment],
       startTime: start.toISOString(),
       endTime: end.toISOString(),
+      generation: {
+        provider: "openai",
+        model: "whisper-1",
+        prompt: "See attached audio file",
+        completion: transcribedText,
+      },
     })
     .send();
 
