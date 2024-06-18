@@ -4,6 +4,7 @@ import { openai } from "@ai-sdk/openai";
 import { Step, Thread } from "@literalai/client";
 import {
   CoreMessage,
+  generateText as generateTextWithoutMonitoring,
   streamText as streamTextWithoutMonitoring,
   tool,
 } from "ai";
@@ -15,6 +16,9 @@ import { queryDatabase } from "./sql-query";
 
 const streamText = literalClient.instrumentation.vercel.instrument(
   streamTextWithoutMonitoring
+);
+const generateText = literalClient.instrumentation.vercel.instrument(
+  generateTextWithoutMonitoring
 );
 
 export const streamChatWithData = async (
@@ -29,89 +33,139 @@ export const streamChatWithData = async (
     return result;
   };
 
+  const querySchema = z
+    .string()
+    .describe(
+      "A natural language query to ask the database. I will be handled by another agent and turned into SQLs."
+    );
+
   const result = await streamText({
     literalAiParent,
     model: openai("gpt-4o"),
-    system:
-      "You are a friendly data assistant. You will help the user view their data at charts and tables.",
+    system: [
+      "You are a copilot on a data dashboard for a company selling GPUs.",
+      "You will help the user query the data and view is as charts and tables.",
+      "You will also help the user understand the data by generating text.",
+    ].join("\n"),
     messages: history,
     temperature: 0.5,
     toolChoice: "auto",
     tools: {
       displayTable: tool({
-        description: "Display a table of data.",
+        description: [
+          "Display a table of data.",
+          "Use for large data sets with multiple columns.",
+          "Do not use when you expect one row or one column.",
+        ].join("\n"),
         parameters: z.object({
-          query: z
-            .string()
+          query: querySchema,
+          outputColumns: z
+            .array(
+              z.object({
+                name: z
+                  .string()
+                  .describe("the name of the column in the SQL result"),
+                label: z.string().describe("the label to display in the table"),
+              })
+            )
             .describe(
-              "The query to pass to another llm, keep it in natural language."
+              [
+                "The columns to display in the table.",
+                'Example: [{"name": "name", "label": "Name"}, {"name": "age", "label": "Age"}]',
+              ].join("\n")
             ),
-          columns: z.array(
-            z.object({
-              name: z.string().describe("the name of the column in the result"),
-              label: z.string().describe("the label to display in the table"),
-            })
-          ),
         }),
-        execute: async ({ query, columns }) => {
+        execute: async ({ query, outputColumns }) => {
           const result = await queryDatabaseSimple(
             query,
-            columns.map((c) => c.name)
+            outputColumns.map((c) => c.name)
           );
           return {
             name: "DataTable",
-            props: { columns, rows: result },
+            props: { columns: outputColumns, rows: result },
           };
         },
       }),
       displayList: tool({
-        description: "Display a list of values.",
+        description: [
+          "Display a values.",
+          "Use to answer to a query that returns a list of names or values.",
+          "Do not use when some other information could be useful.",
+        ].join("\n"),
         parameters: z.object({
-          query: z
+          query: querySchema,
+          outputColumn: z
             .string()
-            .describe(
-              "The query to pass to another llm, keep it in natural language."
-            ),
-          column: z.string().describe("the name of the column in the result"),
+            .describe("the name of the column in the SQL result"),
         }),
-        execute: async ({ query, column }) => {
-          const result = await queryDatabaseSimple(query, [column]);
+        execute: async ({ query, outputColumn }) => {
+          const result = await queryDatabaseSimple(query, [outputColumn]);
           return {
             name: "List",
-            props: { values: result.map((row) => row[column]) },
+            props: { values: result.map((row) => row[outputColumn]) },
           };
         },
       }),
       displayBarChart: tool({
-        description:
-          "Display a list of values labelled numeric values as a bar chart.",
+        description: [
+          "Display a list of labelled numeric values as a bar chart.",
+          "Use for data sets with numeric values.",
+          "You need to get 2 columns and include a label.",
+        ].join("\n"),
         parameters: z.object({
-          query: z
+          query: querySchema,
+          labelOutputColumn: z
             .string()
             .describe(
-              "The query to pass to another llm, keep it in natural language."
+              "the name of the column with the label in the SQL result"
             ),
-          labelColumn: z
+          valueOutputColumn: z
             .string()
-            .describe("the name of the column with the label in the result"),
-          valueColumn: z
-            .string()
-            .describe("the name of the column with the value in the result"),
+            .describe(
+              "the name of the column with the value in the SQL result"
+            ),
         }),
-        execute: async ({ query, labelColumn, valueColumn }) => {
+        execute: async ({ query, labelOutputColumn, valueOutputColumn }) => {
           const result = await queryDatabaseSimple(query, [
-            labelColumn,
-            valueColumn,
+            labelOutputColumn,
+            valueOutputColumn,
           ]);
 
           return {
             name: "BarChart",
             props: {
               entries: result.map((row) => ({
-                name: row[labelColumn],
-                value: row[valueColumn],
+                name: row[labelOutputColumn],
+                value: row[valueOutputColumn],
               })),
             },
+          };
+        },
+      }),
+      displaySingleValue: tool({
+        description: [
+          "Display a single data point.",
+          "Use to answer very simple question, with a value or a name.",
+        ].join("\n"),
+        parameters: z.object({
+          query: querySchema,
+        }),
+        execute: async ({ query }) => {
+          const result = await queryDatabaseSimple(query);
+          const { text } = await generateText({
+            literalAiParent,
+            model: openai("gpt-3.5-turbo"),
+            messages: [
+              ...history,
+              {
+                role: "system",
+                content: "With result: " + JSON.stringify(result),
+              },
+            ],
+          });
+          return {
+            name: "List",
+            props: { values: [text] },
           };
         },
       }),
