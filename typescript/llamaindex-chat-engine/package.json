@@ -1,0 +1,21 @@
+{
+  "name": "llamaindex-chat-engine",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@literalai/client": "^0.0.507",
+    "dotenv": "^16.4.5",
+    "llamaindex": "^0.3.15"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2"
+  }
+}
