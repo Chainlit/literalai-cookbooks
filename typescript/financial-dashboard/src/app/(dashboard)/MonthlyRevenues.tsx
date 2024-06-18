@@ -55,7 +55,10 @@ export const MonthlyRevenues: React.FC<Props> = ({ className, ...props }) => {
           <CardDescription>Revenues for the last 12 months.</CardDescription>
         </div>
         <AiCopilotButton
-          context={{ label: "Monthly revenues", revenues }}
+          context={{
+            label: "Monthly revenues",
+            description: "A line chart of the revenue for the last 12 months.s",
+          }}
           onActiveChange={setAiActive}
         />
       </CardHeader>

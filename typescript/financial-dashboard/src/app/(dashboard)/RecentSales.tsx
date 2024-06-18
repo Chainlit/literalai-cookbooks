@@ -31,7 +31,11 @@ export const RecentSales: React.FC = () => {
       <CardHeader className="flex flex-row gap-3 space-y-0">
         <CardTitle className="flex-1">Recent Sales</CardTitle>
         <AiCopilotButton
-          context={{ label: "recent sales", sales }}
+          context={{
+            label: "recent sales",
+            description:
+              "A list of the top 5 recent sales with total amount and user name.",
+          }}
           onActiveChange={setAiActive}
         />
       </CardHeader>
