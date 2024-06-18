@@ -36,7 +36,10 @@ export const streamChatWithData = async (
   const querySchema = z
     .string()
     .describe(
-      "A natural language query to ask the database. I will be handled by another agent and turned into SQLs."
+      [
+        "A natural language query to text to a data expert.",
+        "Do not write SQL, the data expert will handle it.",
+      ].join("\n")
     );
 
   const result = await streamText({
@@ -64,7 +67,7 @@ export const streamChatWithData = async (
               z.object({
                 name: z
                   .string()
-                  .describe("the name of the column in the SQL result"),
+                  .describe("the name of the column in the JSON result"),
                 label: z.string().describe("the label to display in the table"),
               })
             )
@@ -96,7 +99,7 @@ export const streamChatWithData = async (
           query: querySchema,
           outputColumn: z
             .string()
-            .describe("the name of the column in the SQL result"),
+            .describe("the name of the column in the JSON result"),
         }),
         execute: async ({ query, outputColumn }) => {
           const result = await queryDatabaseSimple(query, [outputColumn]);
@@ -117,12 +120,12 @@ export const streamChatWithData = async (
           labelOutputColumn: z
             .string()
             .describe(
-              "the name of the column with the label in the SQL result"
+              "the name of the column with the label in the JSON result"
             ),
           valueOutputColumn: z
             .string()
             .describe(
-              "the name of the column with the value in the SQL result"
+              "the name of the column with the value in the JSON result"
             ),
         }),
         execute: async ({ query, labelOutputColumn, valueOutputColumn }) => {
