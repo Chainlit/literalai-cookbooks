@@ -1,13 +1,14 @@
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 import { Attachment, LiteralClient } from "@literalai/client";
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI, { toFile } from "openai";
 import { ReadableStream } from "stream/web";
 import { Readable } from "stream";
 
-const openai = new OpenAI();
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const literalClient = new LiteralClient();
-
-const threadName = "Emojifier Run Thread";
 
 export async function POST(req: NextRequest) {
   const data = await req.formData();
@@ -19,7 +20,9 @@ export async function POST(req: NextRequest) {
   }
 
   // Create or retrieve the thread
-  const thread = await literalClient.thread({ name: threadName }).upsert();
+  const thread = await literalClient
+    .thread({ name: "Speech to Emoji Thread" })
+    .upsert();
 
   // This is necessary to convert the Blob to a ReadableStream that can be uploaded to Literal
   const nodeStream = Readable.fromWeb(
@@ -43,7 +46,7 @@ export async function POST(req: NextRequest) {
     .step({
       id: runId,
       type: "run",
-      name: "Emojifier 🤖🎨",
+      name: "Speech to Emoji",
       input: {
         input: { content: "Audio file" },
         attachments: [attachment],
@@ -68,7 +71,7 @@ export async function POST(req: NextRequest) {
   await run
     .step({
       type: "llm",
-      name: "Audio transcription",
+      name: "whisper-1",
       input: { content: "Audio file" },
       output: { content: transcribedText },
       attachments: [attachment],

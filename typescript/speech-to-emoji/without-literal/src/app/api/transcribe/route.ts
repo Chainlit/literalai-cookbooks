@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import OpenAI, { toFile } from "openai";
+import OpenAI, { toFile } from "openai/index.mjs";
 import { ReadableStream } from "stream/web";
 import { Readable } from "stream";
 

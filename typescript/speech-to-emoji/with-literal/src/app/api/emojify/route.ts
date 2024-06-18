@@ -1,8 +1,11 @@
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 import { LiteralClient } from "@literalai/client";
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 
-const openai = new OpenAI();
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const literalClient = new LiteralClient();
 
 export async function POST(req: NextRequest) {
@@ -34,6 +37,7 @@ export async function POST(req: NextRequest) {
     ...prompt.settings,
     messages: [...promptMessages, { role: "user", content: text }],
   });
+
   await literalClient.instrumentation.openai(completion, run);
 
   // We patch the run to add the end time so it shows the correct duration

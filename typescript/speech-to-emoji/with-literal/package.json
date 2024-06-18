@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "predocker:build": "npm i; npm run build",
+    "docker:build": "docker build -t dambuty/emojifier .",
+    "postdocker:build": "docker push dambuty/emojifier"
   },
   "dependencies": {
     "@literalai/client": "^0.0.507",
