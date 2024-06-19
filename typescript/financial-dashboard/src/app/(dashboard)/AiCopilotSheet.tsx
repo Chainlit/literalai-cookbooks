@@ -77,44 +77,44 @@ export const AiCopilotSheet: React.FC = () => {
 
     const reponse = await continueConversationWithData(messages, threadId);
 
-    const botMessages: Message[] = [];
     for await (const chunk of readStreamableValue(reponse)) {
-      switch (chunk?.type) {
-        case "text-delta": {
-          const lastMessage = botMessages[botMessages.length - 1];
-          if (lastMessage?.content != null) {
-            botMessages[botMessages.length - 1] = {
-              ...lastMessage,
-              content: lastMessage.content + chunk.textDelta,
+      const botMessages: Message[] = (chunk ?? []).map((item) => {
+        switch (item.type) {
+          case "text":
+            return {
+              role: "assistant",
+              content: item.content,
             };
-          } else {
-            botMessages.push({
+          case "loading":
+            return {
               role: "assistant",
-              content: chunk.textDelta,
-            });
+              display: <>Loading...</>,
+            };
+          case "component": {
+            const components = [List, DataTable, BarChart];
+            const Component = components.find(
+              (component) => component.name === item.name
+            );
+            if (Component) {
+              return {
+                role: "assistant",
+                data: `Display component ${item.name}`,
+                display: (
+                  <Component
+                    {...(item.props as any)}
+                    onContextChange={setContext}
+                  />
+                ),
+              };
+            } else {
+              return {
+                role: "assistant",
+                content: `Component ${item.name} not found`,
+              };
+            }
           }
-          break;
         }
-        case "tool-result": {
-          const components = [List, DataTable, BarChart];
-          const Component = components.find(
-            (component) => component.name === chunk.result.name
-          );
-          if (Component) {
-            botMessages.push({
-              role: "assistant",
-              data: `Display component ${chunk.result.name}`,
-              display: (
-                <Component
-                  {...(chunk.result.props as any)}
-                  onContextChange={setContext}
-                />
-              ),
-            });
-          }
-          break;
-        }
-      }
+      });
       setHistory([...history, userMessage, ...botMessages]);
       scrollContainer.current?.scrollTo({
         top: scrollContainer.current.scrollHeight,

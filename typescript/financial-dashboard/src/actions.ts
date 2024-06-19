@@ -17,6 +17,5 @@ export const continueConversationWithData = async (
   const run = await thread.step({ type: "run", name: "Answer" }).send();
 
   const stream = await streamChatWithData(run, history);
-
-  return createStreamableValue(stream).value;
+  return stream;
 };

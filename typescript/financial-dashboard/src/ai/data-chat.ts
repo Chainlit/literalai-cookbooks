@@ -4,10 +4,10 @@ import { openai } from "@ai-sdk/openai";
 import { Step, Thread } from "@literalai/client";
 import {
   CoreMessage,
-  generateText as generateTextWithoutMonitoring,
   streamText as streamTextWithoutMonitoring,
   tool,
 } from "ai";
+import { createStreamableValue } from "ai/rsc";
 import { z } from "zod";
 
 import { literalClient } from "@/lib/literal";
@@ -17,9 +17,11 @@ import { queryDatabase } from "./sql-query";
 const streamText = literalClient.instrumentation.vercel.instrument(
   streamTextWithoutMonitoring
 );
-const generateText = literalClient.instrumentation.vercel.instrument(
-  generateTextWithoutMonitoring
-);
+
+type BotMessage =
+  | { type: "text"; content: string }
+  | { type: "loading"; placeholder: string }
+  | { type: "component"; name: string; props: unknown };
 
 export const streamChatWithData = async (
   literalAiParent: Thread | Step,
@@ -41,6 +43,47 @@ export const streamChatWithData = async (
         "Do not write SQL, the data expert will handle it.",
       ].join("\n")
     );
+
+  let streamValue: BotMessage[] = [];
+  const stream = createStreamableValue(streamValue);
+
+  const appendDelta = (delta: string) => {
+    const lastMessage = streamValue[streamValue.length - 1];
+    if (lastMessage?.type === "text") {
+      streamValue = [...streamValue];
+      streamValue[streamValue.length - 1] = {
+        ...lastMessage,
+        content: lastMessage.content + delta,
+      };
+    } else {
+      streamValue = [...streamValue, { type: "text", content: delta }];
+    }
+    stream.update(streamValue);
+  };
+
+  const appendPlaceholder = () => {
+    const placeholder = Math.random().toString(36).substring(3, 7);
+    streamValue = [...streamValue, { type: "loading", placeholder }];
+    stream.update(streamValue);
+    return placeholder;
+  };
+
+  const appendComponent = (
+    placeholder: string,
+    name: string,
+    props: unknown
+  ) => {
+    const index = streamValue.findIndex((message) => {
+      return message.type === "loading" && message.placeholder === placeholder;
+    });
+    if (index < 0) {
+      streamValue = [...streamValue, { type: "component", name, props }];
+    } else {
+      streamValue = [...streamValue];
+      streamValue[index] = { type: "component", name, props };
+    }
+    stream.update(streamValue);
+  };
 
   const result = await streamText({
     literalAiParent,
@@ -79,11 +122,13 @@ export const streamChatWithData = async (
             ),
         }),
         execute: async ({ query, outputColumns }) => {
+          const placeholder = appendPlaceholder();
           const result = await queryDatabaseSimple(
             query,
             outputColumns.map((c) => c.name)
           );
           return {
+            placeholder,
             name: "DataTable",
             props: { columns: outputColumns, rows: result },
           };
@@ -102,8 +147,10 @@ export const streamChatWithData = async (
             .describe("the name of the column in the JSON result"),
         }),
         execute: async ({ query, outputColumn }) => {
+          const placeholder = appendPlaceholder();
           const result = await queryDatabaseSimple(query, [outputColumn]);
           return {
+            placeholder,
             name: "List",
             props: { values: result.map((row) => row[outputColumn]) },
           };
@@ -129,12 +176,14 @@ export const streamChatWithData = async (
             ),
         }),
         execute: async ({ query, labelOutputColumn, valueOutputColumn }) => {
+          const placeholder = appendPlaceholder();
           const result = await queryDatabaseSimple(query, [
             labelOutputColumn,
             valueOutputColumn,
           ]);
 
           return {
+            placeholder,
             name: "BarChart",
             props: {
               entries: result.map((row) => ({
@@ -155,7 +204,7 @@ export const streamChatWithData = async (
         }),
         execute: async ({ query }) => {
           const result = await queryDatabaseSimple(query);
-          const { text } = await generateText({
+          const subResult = await streamText({
             literalAiParent,
             model: openai("gpt-3.5-turbo"),
             messages: [
@@ -166,14 +215,34 @@ export const streamChatWithData = async (
               },
             ],
           });
-          return {
-            name: "List",
-            props: { values: [text] },
-          };
+
+          for await (const chunk of subResult.textStream) {
+            appendDelta(chunk);
+          }
+          return null;
         },
       }),
     },
   });
 
-  return result.fullStream;
+  (async () => {
+    for await (const chunk of result.fullStream) {
+      switch (chunk.type) {
+        case "text-delta": {
+          appendDelta(chunk.textDelta);
+          break;
+        }
+        case "tool-result": {
+          if (chunk.result) {
+            const { placeholder, name, props } = chunk.result;
+            appendComponent(placeholder, name, props);
+          }
+          break;
+        }
+      }
+    }
+    stream.done();
+  })();
+
+  return stream.value;
 };
