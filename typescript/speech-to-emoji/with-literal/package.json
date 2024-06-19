@@ -9,7 +9,9 @@
     "lint": "next lint",
     "predocker:build": "npm i; npm run build",
     "docker:build": "docker build -t dambuty/emojifier .",
-    "postdocker:build": "docker push dambuty/emojifier"
+    "postdocker:build": "docker push dambuty/emojifier",
+    "predocker:run": "[ -f .env.docker ] || echo \"Error: Please create and fill the .env.docker file (without quotes around the values).\"",
+    "docker:run": "docker run --env-file .env.docker -p 3001:3000 dambuty/emojifier"
   },
   "dependencies": {
     "@literalai/client": "^0.0.507",
