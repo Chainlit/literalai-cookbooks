@@ -1,10 +1,13 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import {
   Bar,
   BarChart as BaseBarChart,
   CartesianGrid,
   Legend,
+  ReferenceArea,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -20,23 +23,34 @@ type Props = {
 };
 
 export const BarChart: React.FC<Props> = ({ entries, onContextChange }) => {
+  const [selected, setSelected] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (selected) {
+      onContextChange?.({
+        label: `Selected ${selected}`,
+        selected,
+      });
+    }
+  }, [selected]);
+
   return (
     <ResponsiveContainer width="100%" height={300} className="bg-background">
-      <BaseBarChart data={entries}>
+      <BaseBarChart
+        data={entries}
+        onClick={(data) => {
+          setSelected(data.activeLabel ?? null);
+        }}
+      >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" />
         <YAxis />
         <Tooltip />
         <Legend />
-        <Bar
-          dataKey="value"
-          onClick={(data) => {
-            onContextChange?.({
-              label: `Clicked ${data.payload.name}`,
-              lasClicked: data.payload,
-            });
-          }}
-        />
+        {selected ? (
+          <ReferenceArea x1={selected} x2={selected} fill="#bfdbfe" />
+        ) : null}
+        <Bar dataKey="value" />
       </BaseBarChart>
     </ResponsiveContainer>
   );
