@@ -1,0 +1,53 @@
+{
+  "name": "lancedb-rag",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev -p 3010",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "ingest": "ts-node -r tsconfig-paths/register --project tsconfig.ts-node.json ingest.ts",
+    "evaluate": "ts-node -r tsconfig-paths/register --project tsconfig.ts-node.json evaluation/evaluate.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@ai-sdk/openai": "^0.0.24",
+    "@ai-sdk/react": "^0.0.3",
+    "@huggingface/hub": "^0.15.1",
+    "@literalai/client": "^0.0.507",
+    "@pinecone-database/pinecone": "^2.2.2",
+    "@tailwindcss/typography": "^0.5.13",
+    "@types/node": "^20.14.2",
+    "@xenova/transformers": "^2.17.2",
+    "cli-progress": "^3.12.0",
+    "dotenv": "^16.4.5",
+    "gpt-tokenizer": "^2.1.2",
+    "lodash": "^4.17.21",
+    "next": "14.2.3",
+    "openai": "^4.48.1",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-markdown": "^9.0.1",
+    "with-csv": "^2.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/cli-progress": "^3.11.5",
+    "@types/lodash": "^4.17.5",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.3",
+    "node-loader": "^2.0.0",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5"
+  }
+}
