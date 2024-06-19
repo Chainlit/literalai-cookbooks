@@ -31,7 +31,10 @@ export const BarChart: React.FC<Props> = ({ entries, onContextChange }) => {
         <Bar
           dataKey="value"
           onClick={(data) => {
-            onContextChange?.({ lasClicked: data.payload });
+            onContextChange?.({
+              label: `Clicked ${data.payload.name}`,
+              lasClicked: data.payload,
+            });
           }}
         />
       </BaseBarChart>

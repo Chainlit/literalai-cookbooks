@@ -104,7 +104,12 @@ export const AiCopilotSheet: React.FC = () => {
             botMessages.push({
               role: "assistant",
               data: `Display component ${chunk.result.name}`,
-              display: <Component {...(chunk.result.props as any)} onContextChange={setContext} />,
+              display: (
+                <Component
+                  {...(chunk.result.props as any)}
+                  onContextChange={setContext}
+                />
+              ),
             });
           }
           break;
