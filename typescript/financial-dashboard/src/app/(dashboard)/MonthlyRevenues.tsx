@@ -2,17 +2,17 @@ import { useState } from "react";
 
 import { useQuery } from "@tanstack/react-query";
 import {
-  Bar,
-  BarChart,
   CartesianGrid,
   Legend,
   Line,
   LineChart,
+  ReferenceArea,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
+import type { CategoricalChartFunc } from "recharts/types/chart/generateCategoricalChart";
 
 import { ErrorBlock } from "@/components/atoms/error";
 import {
@@ -34,6 +34,31 @@ type Props = React.ComponentProps<typeof Card>;
 
 export const MonthlyRevenues: React.FC<Props> = ({ className, ...props }) => {
   const [aiActive, setAiActive] = useState(false);
+
+  const [periodSelectionStart, setPeriodSelectionStart] = useState<
+    string | null
+  >(null);
+  const [selectedPeriod, setSelectedPeriod] = useState<[string, string] | null>(
+    null
+  );
+
+  const selectionStart: CategoricalChartFunc = (data, event) => {
+    event.preventDefault();
+    if (!data.activeLabel) return;
+    setPeriodSelectionStart(data.activeLabel);
+  };
+
+  const selectionUpdate: CategoricalChartFunc = (data, event) => {
+    event.preventDefault();
+    if (!periodSelectionStart) return;
+    if (!data.activeLabel) return;
+    setSelectedPeriod([periodSelectionStart, data.activeLabel]);
+  };
+
+  const selectionEnd: CategoricalChartFunc = (data, event: Event) => {
+    event.preventDefault();
+    setPeriodSelectionStart(null);
+  };
 
   const {
     data: revenues,
@@ -57,7 +82,11 @@ export const MonthlyRevenues: React.FC<Props> = ({ className, ...props }) => {
         <AiCopilotButton
           context={{
             label: "Monthly revenues",
-            description: "A line chart of the revenue for the last 12 months.s",
+            description:
+              "A line chart of the revenue for the last 12 months." +
+              (selectedPeriod
+                ? `\nThe selected period is from ${selectedPeriod[0]} to ${selectedPeriod[1]}.`
+                : ""),
           }}
           onActiveChange={setAiActive}
         />
@@ -67,7 +96,13 @@ export const MonthlyRevenues: React.FC<Props> = ({ className, ...props }) => {
         {isLoading ? <Skeleton className="h-[400px] w-full" /> : null}
         {revenues ? (
           <ResponsiveContainer width="100%" height={400}>
-            <LineChart data={revenues}>
+            <LineChart
+              data={revenues}
+              onMouseDown={selectionStart}
+              onMouseMove={selectionUpdate}
+              onMouseLeave={selectionEnd}
+              onMouseUp={selectionEnd}
+            >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" tickFormatter={monthFormatter} />
               <YAxis tickFormatter={formatCurrency} />
@@ -76,6 +111,13 @@ export const MonthlyRevenues: React.FC<Props> = ({ className, ...props }) => {
                 formatter={formatCurrency}
               />
               <Legend />
+              {selectedPeriod ? (
+                <ReferenceArea
+                  x1={selectedPeriod[0]}
+                  x2={selectedPeriod[1]}
+                  fill="#bfdbfe"
+                />
+              ) : null}
               <Line dataKey="revenue" type="monotone" dot={false} />
             </LineChart>
           </ResponsiveContainer>
