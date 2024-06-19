@@ -26,12 +26,36 @@ export const getRagTool = (run: Step): CoreTool => ({
       ),
   }),
   execute: async ({ question, top_k = 5 }) => {
+    const toolStep = await run
+      .step({
+        type: "tool",
+        name: "Document retrieval tool",
+        input: { question, top_k },
+        startTime: new Date().toISOString(),
+      })
+      .send();
+
+    const startEmbedding = new Date();
+
     const {
       data: [{ embedding }],
     } = await openai.embeddings.create({
       model: "text-embedding-3-small",
       input: question,
     });
+
+    await toolStep
+      .step({
+        type: "embedding",
+        name: "Embedding user query",
+        metadata: { model: "text-embedding-3-small" },
+        input: { question },
+        startTime: startEmbedding.toISOString(),
+        endTime: new Date().toISOString(),
+      })
+      .send();
+
+    const startRetrieving = new Date();
 
     const results = await index.namespace("articles").query({
       topK: top_k,
@@ -42,14 +66,20 @@ export const getRagTool = (run: Step): CoreTool => ({
     const ids = map(results.matches, "id");
     const documents = map(results.matches, "metadata.text");
 
-    await run
+    await toolStep
       .step({
         type: "retrieval",
-        name: "Arch-wiki retrieval",
+        name: "Retrieving relevant documents",
         input: { question, top_k },
         output: { fetchedDocuments: ids },
+        startTime: startRetrieving.toISOString(),
+        endTime: new Date().toISOString(),
       })
       .send();
+
+    toolStep.endTime = new Date().toISOString();
+    toolStep.output = { ids, documents };
+    toolStep.send();
 
     return { ids, documents };
   },

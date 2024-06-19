@@ -36,7 +36,7 @@ export async function POST(req: Request) {
   if (lastMessage.role === "user") {
     // Here we are intercepting a user's message
     // We create a new run and call the LLM
-    const userMessage = messages[0].content;
+    const userMessage = lastMessage.content;
 
     await thread
       .step({
@@ -50,7 +50,7 @@ export async function POST(req: Request) {
       .step({
         id: runId,
         type: "run",
-        name: "Arch-wiki Run",
+        name: "RAG Agent",
         input: { content: [...promptMessages, ...messages] },
       })
       .send();
@@ -62,6 +62,15 @@ export async function POST(req: Request) {
       toolChoice: "auto",
       tools: { rag: getRagTool(run) },
       literalAiParent: run,
+      onFinish: async (response) => {
+        // When the run is finished, we update the end time and output of the run
+        run.endTime = new Date().toISOString();
+        run.output = {
+          role: "assistant",
+          content: response.text,
+        };
+        await run.send();
+      },
     });
 
     return result.toAIStreamResponse();
@@ -84,7 +93,7 @@ export async function POST(req: Request) {
       tools: { rag: getRagTool(run) },
       literalAiParent: run,
       onFinish: async (response) => {
-        // When the run is finished, we update the end time and output
+        // When the run is finished, we update the end time and output of the run
         run.endTime = new Date().toISOString();
         run.output = {
           role: "assistant",
