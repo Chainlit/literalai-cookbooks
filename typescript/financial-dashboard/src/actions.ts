@@ -14,7 +14,9 @@ export const continueConversationWithData = async (
     .thread({ id: threadId, name: "Showroom" })
     .upsert();
 
-  const stream = await streamChatWithData(thread, history);
+  const run = await thread.step({ type: "run", name: "Answer" }).send();
+
+  const stream = await streamChatWithData(run, history);
 
   return createStreamableValue(stream).value;
 };
