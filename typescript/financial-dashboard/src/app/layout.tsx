@@ -7,6 +7,8 @@ import Link from "next/link";
 
 import { HomeIcon } from "lucide-react";
 
+import { AiCopilotButton } from "@/components/molecules/ai-copilot/AiCopilotButton";
+
 import { cn } from "@/lib/utils";
 
 import RootLayoutClient from "./layout-client";
@@ -35,29 +37,6 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
-        <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
-          <nav className="flex flex-col gap-6 text-lg font-medium md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-lg font-semibold md:text-base"
-            >
-              <HomeIcon className="size-5" />
-              <h1>GPU Shop</h1>
-            </Link>
-            <Link
-              href="/products"
-              className="text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Products
-            </Link>
-            <Link
-              href="/users"
-              className="text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Users
-            </Link>
-          </nav>
-        </header>
         <RootLayoutClient>{children}</RootLayoutClient>
       </body>
     </html>

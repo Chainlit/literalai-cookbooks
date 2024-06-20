@@ -1,4 +1,6 @@
-import { useRef, useState } from "react";
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 
 import { continueConversationWithData } from "@/actions";
 import { CoreMessage } from "ai";
@@ -54,7 +56,18 @@ const formatMessages = (
 };
 
 export const AiCopilotSheet: React.FC = () => {
-  const { open, setOpen, context, setContext } = useAiCopilotContext();
+  const { open, setOpen, context, setContext, setActive } =
+    useAiCopilotContext();
+
+  useEffect(() => {
+    console.log("AiCopilotSheet mounted");
+    // Declare that there is an active AI Copilot
+    setActive(true);
+    // Unset active AI Copilot when component unmounts
+    return () => {
+      setActive(false);
+    };
+  }, [setActive]);
 
   const contextLabel =
     context instanceof Object && "label" in context

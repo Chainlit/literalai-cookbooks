@@ -27,7 +27,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency, monthFormatter } from "@/lib/formatter";
 import { cn } from "@/lib/utils";
 
-import { AiCopilotButton } from "./AiCopilotButton";
+import { AiCopilotButton } from "../../components/molecules/ai-copilot/AiCopilotButton";
 import { getMonthlyRevenues } from "./queries";
 
 type Props = React.ComponentProps<typeof Card>;
@@ -80,6 +80,7 @@ export const MonthlyRevenues: React.FC<Props> = ({ className, ...props }) => {
           <CardDescription>Revenues for the last 12 months.</CardDescription>
         </div>
         <AiCopilotButton
+          small
           context={{
             label: "Monthly revenues",
             description:

@@ -10,8 +10,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import { cn } from "@/lib/utils";
 
+import { AiCopilotButton } from "../../components/molecules/ai-copilot/AiCopilotButton";
 import { formatCurrency } from "../../lib/formatter";
-import { AiCopilotButton } from "./AiCopilotButton";
 import { getRecentSales } from "./queries";
 
 export const RecentSales: React.FC = () => {
@@ -31,6 +31,7 @@ export const RecentSales: React.FC = () => {
       <CardHeader className="flex flex-row gap-3 space-y-0">
         <CardTitle className="flex-1">Recent Sales</CardTitle>
         <AiCopilotButton
+          small
           context={{
             label: "recent sales",
             description:
