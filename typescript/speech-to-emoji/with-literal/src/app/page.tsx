@@ -48,7 +48,7 @@ export default function Home() {
 
   return (
     <main className="w-screen h-full">
-      <section className="m-auto md:w-1/4 h-full min-h-screen flex flex-col items-center justify-center gap-5">
+      <section className="m-auto w-10/12 md:w-1/4 h-full min-h-screen flex flex-col items-center justify-center gap-5">
         {!audioUrl && !isTranscribing && (
           <>
             <p className="font-mono">
