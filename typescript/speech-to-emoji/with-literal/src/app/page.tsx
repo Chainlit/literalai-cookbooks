@@ -60,19 +60,24 @@ export default function Home() {
               <br />
               3️⃣ Get EMOJIFIED 🎉
             </p>
-            <AudioRecorder
-              recorderControls={recorderControls}
-              classes={{
-                AudioRecorderClass:
-                  "!w-full !h-1/2 flex items-center justify-center !bg-green-200 mt-5",
-              }}
-              onRecordingComplete={handleAudio}
-              audioTrackConstraints={{
-                noiseSuppression: true,
-                echoCancellation: true,
-              }}
-              showVisualizer={true}
-            />
+            <div
+              onClick={() => recorderControls.startRecording()}
+              className="w-full cursor-pointer"
+            >
+              <AudioRecorder
+                recorderControls={recorderControls}
+                classes={{
+                  AudioRecorderClass:
+                    "!w-full !h-1/2 flex items-center justify-center !bg-green-200",
+                }}
+                onRecordingComplete={handleAudio}
+                audioTrackConstraints={{
+                  noiseSuppression: true,
+                  echoCancellation: true,
+                }}
+                showVisualizer={true}
+              />
+            </div>
             {recorderControls.isRecording && (
               <p>Click the 💾/⬛ button when you&apos;re done ;)</p>
             )}

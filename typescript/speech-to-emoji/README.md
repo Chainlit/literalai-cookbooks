@@ -72,7 +72,7 @@ You can create a new [prompt](https://docs.getliteral.ai/concepts/prompt/overvie
 
 Here is what it looks like in Literal AI :
 
-[![Literal AI Run]](prompt-on-literal.png)
+![Literal AI Run](prompt-on-literal.png)
 
 ### Retrieving prompts from Literal AI
 
@@ -113,7 +113,7 @@ We want to log each request as a [run](https://docs.getliteral.ai/concepts/obser
 
 Here is what it will look like on Literal AI :
 
-[![Literal AI Run]](requests-logging.png)
+![Literal AI Run](requests-logging.png)
 
 ### Logging the run
 
