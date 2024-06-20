@@ -36,10 +36,12 @@ export type QueryResult<T = unknown> = {
 };
 
 export const queryDatabase = async <T = unknown>(
-  literalAiParent: Thread | Step,
+  literalAiParent: Step,
   query: string,
   columnNames?: string[]
 ): Promise<QueryResult<T>> => {
+  literalAiParent.input = { query, columnNames };
+
   const messages: CoreMessage[] = [
     {
       role: "system",
@@ -79,6 +81,8 @@ export const queryDatabase = async <T = unknown>(
 
     try {
       const result = db.prepare(query).all() as T[];
+      literalAiParent.output = { result, query, attempts };
+      await literalAiParent.send();
       return { result, query, attempts };
     } catch (error) {
       messages.push(

@@ -24,9 +24,11 @@ type BotMessage =
   | { type: "component"; name: string; props: unknown };
 
 export const streamChatWithData = async (
-  literalAiParent: Thread | Step,
+  literalAiParent: Step,
   history: CoreMessage[]
 ) => {
+  literalAiParent.input = { history };
+
   const queryDatabaseSimple = async (query: string, columnNames?: string[]) => {
     const step = await literalAiParent
       .step({ type: "tool", name: "Query Database" })
@@ -241,6 +243,8 @@ export const streamChatWithData = async (
         }
       }
     }
+    literalAiParent.output = { messages: streamValue };
+    await literalAiParent.send();
     stream.done();
   })();
 
