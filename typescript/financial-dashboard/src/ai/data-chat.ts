@@ -42,7 +42,9 @@ export const streamChatWithData = async (
     .describe(
       [
         "A natural language query to text to a data expert.",
+        "Use any context provided if possible.",
         "Do not write SQL, the data expert will handle it.",
+        "You can only read data. Insert, update or delete is not allowed.",
       ].join("\n")
     );
 
