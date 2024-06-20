@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { continueConversationWithData } from "@/actions";
 import { CoreMessage } from "ai";
 import { readStreamableValue } from "ai/rsc";
-import { ArrowRightIcon, CornerDownRightIcon } from "lucide-react";
+import { ArrowRightIcon, CornerDownRightIcon, XIcon } from "lucide-react";
 
 import { DataBarChart } from "@/components/atoms/DataBarChart";
 import { DataList } from "@/components/atoms/DataList";
@@ -13,7 +13,6 @@ import { DataTable } from "@/components/atoms/DataTable";
 import { EvaluationBlock } from "@/components/molecules/EvaluationBlock";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 import { cn } from "@/lib/utils";
 
@@ -141,66 +140,80 @@ export const AiCopilotSheet: React.FC = () => {
     }
   };
 
-  const [container, setContainer] = useState<HTMLElement>();
-
   return (
-    <>
-      <div ref={(el) => setContainer(el!)} />
-      <Sheet open={open} onOpenChange={setOpen} modal={false}>
-        <SheetContent
-          portalContainer={container}
-          className="relative flex h-[calc(100vh_-_theme(spacing.16))] w-full flex-col"
-        >
-          <section
-            ref={scrollContainer}
-            className="w-72 flex-1 overflow-y-auto overflow-x-hidden"
+    <SoftSheet open={open} setOpen={setOpen}>
+      <section
+        ref={scrollContainer}
+        className="flex-1 overflow-y-auto overflow-x-hidden"
+      >
+        {history.map((message, index) => (
+          <div
+            key={index}
+            className="relative cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-slate-100 hover:text-slate-900 data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
           >
-            {history.map((message, index) => (
-              <div
-                key={index}
-                className="relative cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-slate-100 hover:text-slate-900 data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
-              >
-                <h6 className="text-xs text-muted-foreground">
-                  {message.role}
-                </h6>
-                {message.runId ? (
-                  <EvaluationBlock runId={message.runId} />
-                ) : null}
-                {message.content ? <p>{message.content}</p> : null}
-                {message.display}
-              </div>
-            ))}
-          </section>
+            <h6 className="text-xs text-muted-foreground">{message.role}</h6>
+            {message.runId ? <EvaluationBlock runId={message.runId} /> : null}
+            {message.content ? <p>{message.content}</p> : null}
+            {message.display}
+          </div>
+        ))}
+      </section>
 
-          <form
-            className="relative flex shrink-0 flex-col items-center"
-            onSubmit={(ev) => {
-              ev.preventDefault();
-              handle();
-            }}
-          >
-            {contextLabel ? (
-              <p className="flex h-7 w-full shrink-0 items-center gap-1 rounded-t-md bg-blue-50 px-3 text-xs text-blue-600">
-                <CornerDownRightIcon className="size-3" /> With {contextLabel}
-              </p>
-            ) : null}
-            <Input
-              placeholder="Ask AI..."
-              className={cn("block h-8", contextLabel ? "rounded-t-none" : "")}
-              value={query}
-              onChange={(ev) => setQuery(ev.target.value)}
-            />
-            <Button
-              type="submit"
-              variant="ghost"
-              size="icon"
-              className="absolute bottom-1 right-2 size-6 shrink-0 rounded-full"
-            >
-              <ArrowRightIcon className="size-4 shrink-0" />
-            </Button>
-          </form>
-        </SheetContent>
-      </Sheet>
-    </>
+      <form
+        className="relative flex shrink-0 flex-col items-center"
+        onSubmit={(ev) => {
+          ev.preventDefault();
+          handle();
+        }}
+      >
+        {contextLabel ? (
+          <p className="flex h-7 w-full shrink-0 items-center gap-1 rounded-t-md bg-blue-50 px-3 text-xs text-blue-600">
+            <CornerDownRightIcon className="size-3" /> With {contextLabel}
+          </p>
+        ) : null}
+        <Input
+          placeholder="Ask AI..."
+          className={cn("block h-8", contextLabel ? "rounded-t-none" : "")}
+          value={query}
+          onChange={(ev) => setQuery(ev.target.value)}
+        />
+        <Button
+          type="submit"
+          variant="ghost"
+          size="icon"
+          className="absolute bottom-1 right-2 size-6 shrink-0 rounded-full"
+        >
+          <ArrowRightIcon className="size-4 shrink-0" />
+        </Button>
+      </form>
+    </SoftSheet>
   );
 };
+
+type SoftSheetProps = {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  children?: React.ReactNode;
+};
+
+const SoftSheet: React.FC<SoftSheetProps> = ({ open, setOpen, children }) => (
+  <div
+    data-state={open ? "open" : "closed"}
+    className="relative transition-all ease-in-out data-[state=closed]:w-0 data-[state=open]:w-80 data-[state=closed]:duration-300 data-[state=open]:duration-500"
+  >
+    <div
+      data-state={open ? "open" : "closed"}
+      className="absolute inset-y-0 left-0 right-0 top-0 flex h-full w-80 flex-col gap-4 border-l bg-background p-6 shadow-lg transition-all ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500"
+    >
+      {children}
+      <button
+        type="button"
+        onClick={() => setOpen(false)}
+        className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary"
+      >
+        <XIcon className="h-4 w-4" />
+        <span className="sr-only">Close</span>
+      </button>
+    </div>
+  </div>
+);
