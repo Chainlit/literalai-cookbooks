@@ -159,6 +159,32 @@ export const AiCopilotSheet: React.FC = () => {
         ))}
       </section>
 
+      {history.length < 1 && query.length < 1 ? (
+        <section className="space-y-2">
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={() => setQuery("Can you explain this?")}
+          >
+            Can you explain this?
+          </Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={() => setQuery("What products sell the most?")}
+          >
+            What products sell the most?
+          </Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={() => setQuery("Who is our best client?")}
+          >
+            Who is our best client?
+          </Button>
+        </section>
+      ) : null}
+
       <form
         className="relative flex shrink-0 flex-col items-center"
         onSubmit={(ev) => {
