@@ -13,7 +13,7 @@ import {
 } from "@tanstack/react-table";
 import { ArrowUpDownIcon } from "lucide-react";
 
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import {
   Table,
   TableBody,
@@ -21,7 +21,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./ui/table";
+} from "../ui/table";
 
 type Props = {
   columns: { name: string; label: string }[];

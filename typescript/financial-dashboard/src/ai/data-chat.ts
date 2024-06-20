@@ -155,7 +155,7 @@ export const streamChatWithData = async (
           const result = await queryDatabaseSimple(query, [outputColumn]);
           return {
             placeholder,
-            name: "List",
+            name: "DataList",
             props: { values: result.map((row) => row[outputColumn]) },
           };
         },
@@ -188,7 +188,7 @@ export const streamChatWithData = async (
 
           return {
             placeholder,
-            name: "BarChart",
+            name: "DataBarChart",
             props: {
               entries: result.map((row) => ({
                 name: row[labelOutputColumn],

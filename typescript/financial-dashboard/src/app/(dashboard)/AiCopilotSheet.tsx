@@ -5,9 +5,10 @@ import { CoreMessage } from "ai";
 import { readStreamableValue } from "ai/rsc";
 import { ArrowRightIcon, CornerDownRightIcon } from "lucide-react";
 
-import { BarChart } from "@/components/BarChart";
-import { DataTable } from "@/components/DataTable";
-import { List } from "@/components/List";
+import { DataBarChart } from "@/components/atoms/DataBarChart";
+import { DataList } from "@/components/atoms/DataList";
+import { DataTable } from "@/components/atoms/DataTable";
+import { EvaluationBlock } from "@/components/molecules/EvaluationBlock";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
@@ -91,7 +92,7 @@ export const AiCopilotSheet: React.FC = () => {
               display: <>Loading...</>,
             };
           case "component": {
-            const components = [List, DataTable, BarChart];
+            const components = [DataList, DataTable, DataBarChart];
             const Component = components.find(
               (component) => component.name === item.name
             );

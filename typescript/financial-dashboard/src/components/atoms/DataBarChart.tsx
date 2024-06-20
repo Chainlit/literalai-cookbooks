@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import {
   Bar,
-  BarChart as BaseBarChart,
+  BarChart,
   CartesianGrid,
   Legend,
   ReferenceArea,
@@ -22,7 +22,7 @@ type Props = {
   onContextChange?: (context: any) => void;
 };
 
-export const BarChart: React.FC<Props> = ({ entries, onContextChange }) => {
+export const DataBarChart: React.FC<Props> = ({ entries, onContextChange }) => {
   const [selected, setSelected] = useState<string | null>(null);
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export const BarChart: React.FC<Props> = ({ entries, onContextChange }) => {
 
   return (
     <ResponsiveContainer width="100%" height={300} className="bg-background">
-      <BaseBarChart
+      <BarChart
         data={entries}
         onClick={(data) => {
           setSelected(data.activeLabel ?? null);
@@ -51,7 +51,7 @@ export const BarChart: React.FC<Props> = ({ entries, onContextChange }) => {
           <ReferenceArea x1={selected} x2={selected} fill="#bfdbfe" />
         ) : null}
         <Bar dataKey="value" />
-      </BaseBarChart>
+      </BarChart>
     </ResponsiveContainer>
   );
 };
