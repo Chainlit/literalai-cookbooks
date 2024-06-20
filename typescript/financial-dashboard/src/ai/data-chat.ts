@@ -1,7 +1,9 @@
 "use server";
 
+import { randomUUID } from "crypto";
+
 import { openai } from "@ai-sdk/openai";
-import { Step, Thread } from "@literalai/client";
+import { Step } from "@literalai/client";
 import {
   CoreMessage,
   streamText as streamTextWithoutMonitoring,
@@ -19,14 +21,15 @@ const streamText = literalClient.instrumentation.vercel.instrument(
 );
 
 type BotMessage =
-  | { type: "text"; content: string }
-  | { type: "loading"; placeholder: string }
-  | { type: "component"; name: string; props: unknown };
+  | { type: "text"; runId: string; content: string }
+  | { type: "loading"; runId: string; placeholder: string }
+  | { type: "component"; runId: string; name: string; props: unknown };
 
 export const streamChatWithData = async (
   literalAiParent: Step,
   history: CoreMessage[]
 ) => {
+  literalAiParent.id = literalAiParent.id ?? randomUUID();
   literalAiParent.input = { history };
 
   const queryDatabaseSimple = async (query: string, columnNames?: string[]) => {
@@ -36,6 +39,8 @@ export const streamChatWithData = async (
     const { result } = await queryDatabase<any>(step, query, columnNames);
     return result;
   };
+
+  const runId = literalAiParent.id;
 
   const querySchema = z
     .string()
@@ -60,14 +65,14 @@ export const streamChatWithData = async (
         content: lastMessage.content + delta,
       };
     } else {
-      streamValue = [...streamValue, { type: "text", content: delta }];
+      streamValue = [...streamValue, { type: "text", runId, content: delta }];
     }
     stream.update(streamValue);
   };
 
   const appendPlaceholder = () => {
     const placeholder = Math.random().toString(36).substring(3, 7);
-    streamValue = [...streamValue, { type: "loading", placeholder }];
+    streamValue = [...streamValue, { type: "loading", runId, placeholder }];
     stream.update(streamValue);
     return placeholder;
   };
@@ -81,10 +86,10 @@ export const streamChatWithData = async (
       return message.type === "loading" && message.placeholder === placeholder;
     });
     if (index < 0) {
-      streamValue = [...streamValue, { type: "component", name, props }];
+      streamValue = [...streamValue, { type: "component", runId, name, props }];
     } else {
       streamValue = [...streamValue];
-      streamValue[index] = { type: "component", name, props };
+      streamValue[index] = { type: "component", runId, name, props };
     }
     stream.update(streamValue);
   };

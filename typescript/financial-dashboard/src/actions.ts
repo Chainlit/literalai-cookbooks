@@ -19,3 +19,12 @@ export const continueConversationWithData = async (
   const stream = await streamChatWithData(run, history);
   return stream;
 };
+
+export const evaluateRun = async (runId: string, value: number) => {
+  await literalClient.api.createScore({
+    stepId: runId,
+    name: "user-feedback",
+    type: "HUMAN",
+    value,
+  });
+};

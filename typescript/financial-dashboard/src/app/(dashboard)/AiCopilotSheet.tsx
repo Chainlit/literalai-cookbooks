@@ -19,6 +19,7 @@ import { useAiCopilotContext } from "./AiCopilotProvider";
 
 type Message = {
   role: "user" | "assistant" | "system";
+  runId?: string;
   content?: string;
   display?: React.ReactNode;
   data?: unknown;
@@ -85,6 +86,7 @@ export const AiCopilotSheet: React.FC = () => {
             return {
               role: "assistant",
               content: item.content,
+              runId: item.runId,
             };
           case "loading":
             return {
@@ -100,6 +102,7 @@ export const AiCopilotSheet: React.FC = () => {
               return {
                 role: "assistant",
                 data: `Display component ${item.name}`,
+                runId: item.runId,
                 display: (
                   <Component
                     {...(item.props as any)}
@@ -111,6 +114,7 @@ export const AiCopilotSheet: React.FC = () => {
               return {
                 role: "assistant",
                 content: `Component ${item.name} not found`,
+                runId: item.runId,
               };
             }
           }
@@ -146,6 +150,9 @@ export const AiCopilotSheet: React.FC = () => {
                 <h6 className="text-xs text-muted-foreground">
                   {message.role}
                 </h6>
+                {message.runId ? (
+                  <EvaluationBlock runId={message.runId} />
+                ) : null}
                 {message.content ? <p>{message.content}</p> : null}
                 {message.display}
               </div>

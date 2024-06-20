@@ -2,7 +2,7 @@
 
 import { rawDatabase as db } from "@/db";
 import { openai } from "@ai-sdk/openai";
-import { Step, Thread } from "@literalai/client";
+import { Step } from "@literalai/client";
 import {
   generateText as generateTextWithoutMonitoring,
   type CoreMessage,
