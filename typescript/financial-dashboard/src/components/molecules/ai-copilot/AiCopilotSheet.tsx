@@ -54,6 +54,12 @@ const formatMessages = (
   return formatted;
 };
 
+const SampleQuestions = [
+  "Can you explain this?",
+  "What products sell the most?",
+  "Who is our best client?",
+];
+
 export const AiCopilotSheet: React.FC = () => {
   const { open, setOpen, context, setContext, setActive } =
     useAiCopilotContext();
@@ -79,10 +85,10 @@ export const AiCopilotSheet: React.FC = () => {
 
   const scrollContainer = useRef<HTMLDivElement>(null);
 
-  const handle = async () => {
+  const handle = async (content = query) => {
     const userMessage: Message = {
       role: "user",
-      content: query,
+      content,
     };
     const messages = formatMessages([...history, userMessage], context);
 
@@ -161,30 +167,17 @@ export const AiCopilotSheet: React.FC = () => {
 
       {history.length < 1 && query.length < 1 ? (
         <section className="space-y-2">
-          <Button
-            size="sm"
-            variant="outline"
-            className="border-dashed"
-            onClick={() => setQuery("Can you explain this?")}
-          >
-            Can you explain this?
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="border-dashed"
-            onClick={() => setQuery("What products sell the most?")}
-          >
-            What products sell the most?
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="border-dashed"
-            onClick={() => setQuery("Who is our best client?")}
-          >
-            Who is our best client?
-          </Button>
+          {SampleQuestions.map((question) => (
+            <Button
+              key={question}
+              size="sm"
+              variant="outline"
+              className="border-dashed"
+              onClick={() => handle(question)}
+            >
+              {question}
+            </Button>
+          ))}
         </section>
       ) : null}
 
