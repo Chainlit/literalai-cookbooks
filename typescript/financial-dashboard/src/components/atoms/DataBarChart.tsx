@@ -13,6 +13,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import colors from "tailwindcss/colors";
 
 type Props = {
   entries: {
@@ -51,7 +52,7 @@ export const DataBarChart: React.FC<Props> = ({ entries, onContextChange }) => {
           <ReferenceArea
             x1={selected}
             x2={selected}
-            fill="#3b82f6"
+            fill={colors.rose[500]}
             fillOpacity={0.2}
           />
         ) : null}

@@ -28,11 +28,7 @@ export const RecentSales: React.FC = () => {
   });
 
   return (
-    <Card
-      className={cn(
-        aiActive ? "outline outline-blue-300 dark:outline-blue-800" : ""
-      )}
-    >
+    <Card className={cn(aiActive ? "outline outline-rose-500/50" : "")}>
       <CardHeader className="flex flex-row gap-3 space-y-0">
         <CardTitle className="flex-1">Recent Sales</CardTitle>
         <AiCopilotButton
@@ -45,7 +41,7 @@ export const RecentSales: React.FC = () => {
           onActiveChange={setAiActive}
         />
       </CardHeader>
-      <CardContent className="grid gap-8">
+      <CardContent className="grid gap-8 overflow-auto">
         {error ? <ErrorBlock error={error} /> : null}
         {isLoading ? (
           <>

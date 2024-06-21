@@ -51,8 +51,8 @@ export const AiCopilotButton: React.FC<Props> = ({
         className={cn(
           "size-8",
           active
-            ? "bg-blue-500 hover:bg-blue-600"
-            : "text-blue-500 hover:text-blue-600"
+            ? "bg-rose-500 hover:bg-rose-600"
+            : "text-rose-500 hover:text-rose-600"
         )}
         title="Ask AI"
         onClick={handleClick}
@@ -67,8 +67,8 @@ export const AiCopilotButton: React.FC<Props> = ({
         className={cn(
           "flex items-center gap-2",
           active
-            ? "bg-blue-500 hover:bg-blue-600"
-            : "text-blue-500 hover:text-blue-600"
+            ? "bg-rose-500 hover:bg-rose-600"
+            : "text-rose-500 hover:text-rose-600"
         )}
         onClick={handleClick}
       >

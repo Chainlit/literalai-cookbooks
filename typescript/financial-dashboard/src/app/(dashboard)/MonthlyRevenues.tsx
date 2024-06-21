@@ -13,6 +13,7 @@ import {
   YAxis,
 } from "recharts";
 import type { CategoricalChartFunc } from "recharts/types/chart/generateCategoricalChart";
+import colors from "tailwindcss/colors";
 
 import { ErrorBlock } from "@/components/atoms/error";
 import {
@@ -72,7 +73,7 @@ export const MonthlyRevenues: React.FC<Props> = ({ className, ...props }) => {
   return (
     <Card
       {...props}
-      className={cn(className, aiActive ? "outline outline-blue-300 dark:outline-blue-800" : "")}
+      className={cn(className, aiActive ? "outline outline-rose-500/50" : "")}
     >
       <CardHeader className="flex flex-row space-y-0">
         <div className="grid flex-1 gap-2">
@@ -116,11 +117,16 @@ export const MonthlyRevenues: React.FC<Props> = ({ className, ...props }) => {
                 <ReferenceArea
                   x1={selectedPeriod[0]}
                   x2={selectedPeriod[1]}
-                  fill="#3b82f6"
-                  fillOpacity={0.2}
+                  fill={colors.rose[500]}
+                  fillOpacity={0.1}
                 />
               ) : null}
-              <Line dataKey="revenue" type="monotone" dot={false} />
+              <Line
+                dataKey="revenue"
+                type="monotone"
+                dot={false}
+                stroke={colors.rose[500]}
+              />
             </LineChart>
           </ResponsiveContainer>
         ) : null}

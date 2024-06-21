@@ -163,21 +163,24 @@ export const AiCopilotSheet: React.FC = () => {
         <section className="space-y-2">
           <Button
             size="sm"
-            variant="secondary"
+            variant="outline"
+            className="border-dashed"
             onClick={() => setQuery("Can you explain this?")}
           >
             Can you explain this?
           </Button>
           <Button
             size="sm"
-            variant="secondary"
+            variant="outline"
+            className="border-dashed"
             onClick={() => setQuery("What products sell the most?")}
           >
             What products sell the most?
           </Button>
           <Button
             size="sm"
-            variant="secondary"
+            variant="outline"
+            className="border-dashed"
             onClick={() => setQuery("Who is our best client?")}
           >
             Who is our best client?
@@ -193,7 +196,7 @@ export const AiCopilotSheet: React.FC = () => {
         }}
       >
         {contextLabel ? (
-          <p className="flex h-7 w-full shrink-0 items-center gap-1 rounded-t-md bg-blue-50 px-3 text-xs text-blue-600 dark:bg-blue-900 dark:text-blue-100">
+          <p className="flex h-7 w-full shrink-0 items-center gap-1 rounded-t-md bg-rose-50 px-3 text-xs text-rose-600 dark:bg-rose-900 dark:text-rose-100">
             <CornerDownRightIcon className="size-3" /> With {contextLabel}
           </p>
         ) : null}
