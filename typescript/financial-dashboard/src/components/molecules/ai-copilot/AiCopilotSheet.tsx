@@ -55,7 +55,7 @@ const formatMessages = (
 };
 
 const SampleQuestions = [
-  "Can you explain this?",
+  "Can you explain this context?",
   "What products sell the most?",
   "Who is our best client?",
 ];
@@ -174,7 +174,7 @@ export const AiCopilotSheet: React.FC = () => {
               key={question}
               size="sm"
               variant="outline"
-              className="border-dashed"
+              className="border-dashed border-slate-300 text-slate-600 dark:border-zinc-700 dark:text-zinc-300"
               onClick={() => handle(question)}
             >
               {question}
@@ -210,6 +210,10 @@ export const AiCopilotSheet: React.FC = () => {
           <ArrowRightIcon className="size-4 shrink-0" />
         </Button>
       </form>
+      <p className="text-center text-xs opacity-50">
+        <strong>Disclaimer:</strong>
+        This is just a demo. It may behave unexpectedly.
+      </p>
     </SoftSheet>
   );
 };
