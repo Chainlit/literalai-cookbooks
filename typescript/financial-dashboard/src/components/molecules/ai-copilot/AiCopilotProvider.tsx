@@ -15,7 +15,7 @@ export const AiCopilotProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [context, setContext] = useState<unknown>();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const [active, setActive] = useState(false);
 
   const contextValue = useMemo<AiCopilotContextValue>(
