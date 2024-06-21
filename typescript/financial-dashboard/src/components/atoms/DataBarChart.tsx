@@ -48,7 +48,12 @@ export const DataBarChart: React.FC<Props> = ({ entries, onContextChange }) => {
         <Tooltip />
         <Legend />
         {selected ? (
-          <ReferenceArea x1={selected} x2={selected} fill="#bfdbfe" />
+          <ReferenceArea
+            x1={selected}
+            x2={selected}
+            fill="#3b82f6"
+            fillOpacity={0.2}
+          />
         ) : null}
         <Bar dataKey="value" />
       </BarChart>

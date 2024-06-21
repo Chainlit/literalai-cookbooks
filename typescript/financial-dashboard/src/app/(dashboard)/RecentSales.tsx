@@ -27,7 +27,11 @@ export const RecentSales: React.FC = () => {
   });
 
   return (
-    <Card className={cn(aiActive ? "outline outline-blue-300" : "")}>
+    <Card
+      className={cn(
+        aiActive ? "outline outline-blue-300 dark:outline-blue-800" : ""
+      )}
+    >
       <CardHeader className="flex flex-row gap-3 space-y-0">
         <CardTitle className="flex-1">Recent Sales</CardTitle>
         <AiCopilotButton

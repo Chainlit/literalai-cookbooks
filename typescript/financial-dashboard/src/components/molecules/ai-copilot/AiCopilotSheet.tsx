@@ -193,7 +193,7 @@ export const AiCopilotSheet: React.FC = () => {
         }}
       >
         {contextLabel ? (
-          <p className="flex h-7 w-full shrink-0 items-center gap-1 rounded-t-md bg-blue-50 px-3 text-xs text-blue-600">
+          <p className="flex h-7 w-full shrink-0 items-center gap-1 rounded-t-md bg-blue-50 px-3 text-xs text-blue-600 dark:bg-blue-900 dark:text-blue-100">
             <CornerDownRightIcon className="size-3" /> With {contextLabel}
           </p>
         ) : null}

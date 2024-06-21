@@ -72,7 +72,7 @@ export const MonthlyRevenues: React.FC<Props> = ({ className, ...props }) => {
   return (
     <Card
       {...props}
-      className={cn(className, aiActive ? "outline outline-blue-300" : "")}
+      className={cn(className, aiActive ? "outline outline-blue-300 dark:outline-blue-800" : "")}
     >
       <CardHeader className="flex flex-row space-y-0">
         <div className="grid flex-1 gap-2">
@@ -116,7 +116,8 @@ export const MonthlyRevenues: React.FC<Props> = ({ className, ...props }) => {
                 <ReferenceArea
                   x1={selectedPeriod[0]}
                   x2={selectedPeriod[1]}
-                  fill="#bfdbfe"
+                  fill="#3b82f6"
+                  fillOpacity={0.2}
                 />
               ) : null}
               <Line dataKey="revenue" type="monotone" dot={false} />
