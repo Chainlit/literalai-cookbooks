@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { ErrorBlock } from "@/components/atoms/error";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -58,7 +59,15 @@ export const RecentSales: React.FC = () => {
         {sales
           ? sales.map((sale, index) => (
               <div key={index} className="flex items-center gap-4">
-                <div className="hidden size-9 rounded-full bg-zinc-200 sm:block" />
+                <Avatar className="hidden size-9 sm:block">
+                  <AvatarImage
+                    src={`https://i.pravatar.cc/150?u=${sale.userEmail}`}
+                    alt={sale.userName}
+                  />
+                  <AvatarFallback>
+                    {sale.userName.substring(0, 2)}
+                  </AvatarFallback>
+                </Avatar>
                 <div className="grid gap-1">
                   <p className="text-sm font-medium leading-none">
                     {sale.userName}
