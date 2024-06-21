@@ -159,7 +159,9 @@ export const AiCopilotSheet: React.FC = () => {
           >
             <h6 className="text-xs text-muted-foreground">{message.role}</h6>
             {message.runId ? <EvaluationBlock runId={message.runId} /> : null}
-            {message.content ? <p>{message.content}</p> : null}
+            {message.content ? (
+              <p className="whitespace-break-spaces">{message.content}</p>
+            ) : null}
             {message.display}
           </div>
         ))}

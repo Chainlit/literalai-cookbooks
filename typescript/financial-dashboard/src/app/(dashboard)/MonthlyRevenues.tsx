@@ -73,7 +73,10 @@ export const MonthlyRevenues: React.FC<Props> = ({ className, ...props }) => {
   return (
     <Card
       {...props}
-      className={cn(className, aiActive ? "outline outline-rose-500/50" : "")}
+      className={cn(
+        className,
+        aiActive ? "outline outline-2 outline-rose-500/50" : ""
+      )}
     >
       <CardHeader className="flex flex-row space-y-0">
         <div className="grid flex-1 gap-2">
