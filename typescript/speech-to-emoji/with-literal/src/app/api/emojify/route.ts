@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
     role: "assistant",
     content: completion.choices[0].message.content,
   };
-  run.send();
+  await run.send();
 
   return Response.json({
     emojifiedText: completion.choices[0].message.content,
