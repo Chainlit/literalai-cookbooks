@@ -199,7 +199,7 @@ export const AiCopilotSheet: React.FC = () => {
         ) : null}
         <Input
           placeholder="Ask AI..."
-          className={cn("block h-8", contextLabel ? "rounded-t-none" : "")}
+          className={cn("block", contextLabel ? "rounded-t-none" : "")}
           value={query}
           onChange={(ev) => setQuery(ev.target.value)}
         />
@@ -207,7 +207,7 @@ export const AiCopilotSheet: React.FC = () => {
           type="submit"
           variant="ghost"
           size="icon"
-          className="absolute bottom-1 right-2 size-6 shrink-0 rounded-full"
+          className="absolute bottom-2 right-2 size-6 shrink-0 rounded-full"
         >
           <ArrowRightIcon className="size-4 shrink-0" />
         </Button>
