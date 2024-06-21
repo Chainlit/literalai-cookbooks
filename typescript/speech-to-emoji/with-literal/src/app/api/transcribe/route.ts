@@ -1,7 +1,11 @@
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-import { Attachment, LiteralClient } from "@literalai/client";
+import {
+  Attachment,
+  IGenerationMessage,
+  LiteralClient,
+} from "@literalai/client";
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI, { toFile } from "openai";
 import { ReadableStream } from "stream/web";
@@ -67,21 +71,31 @@ export async function POST(req: NextRequest) {
 
   const end = new Date();
 
+  const input: IGenerationMessage = {
+    role: "user",
+    content: "See attached audio file",
+  };
+  const output: IGenerationMessage = {
+    role: "assistant",
+    content: transcribedText,
+  };
+
   // Create the Transcription step
   await run
     .step({
       type: "llm",
       name: "whisper-1",
-      input: { content: "Audio file" },
-      output: { content: transcribedText },
+      input,
+      output,
       attachments: [attachment],
       startTime: start.toISOString(),
       endTime: end.toISOString(),
       generation: {
+        type: "CHAT",
         provider: "openai",
         model: "whisper-1",
-        prompt: "See attached audio file",
-        completion: transcribedText,
+        messages: [input],
+        messageCompletion: output,
       },
     })
     .send();

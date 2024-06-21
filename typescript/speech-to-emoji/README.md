@@ -208,7 +208,7 @@ run.output = {
   role: "assistant",
   content: completion.choices[0].message.content,
 };
-run.send();
+await run.send();
 ```
 
 ## Conclusion
