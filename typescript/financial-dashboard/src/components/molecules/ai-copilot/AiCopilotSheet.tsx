@@ -183,6 +183,17 @@ export const AiCopilotSheet: React.FC = () => {
         </section>
       ) : null}
 
+      {history.length > 0 ? (
+        <Button
+          size="sm"
+          variant="link"
+          className="h-5 self-start text-xs opacity-50"
+          onClick={() => setHistory([])}
+        >
+          Clear
+        </Button>
+      ) : null}
+
       <form
         className="relative flex shrink-0 flex-col items-center"
         onSubmit={(ev) => {
@@ -193,6 +204,16 @@ export const AiCopilotSheet: React.FC = () => {
         {contextLabel ? (
           <p className="flex h-7 w-full shrink-0 items-center gap-1 rounded-t-md bg-rose-50 px-3 text-xs text-rose-600 dark:bg-rose-900 dark:text-rose-100">
             <CornerDownRightIcon className="size-3" /> With {contextLabel}
+            <span className="flex-1"></span>
+            <Button
+              type="button"
+              size="icon"
+              variant="ghost"
+              className="size-5 rounded-full hover:bg-rose-500/10 hover:text-rose-700"
+              onClick={() => setContext(null)}
+            >
+              <XIcon className="size-3" />
+            </Button>
           </p>
         ) : null}
         <Input
