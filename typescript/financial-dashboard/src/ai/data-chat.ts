@@ -254,8 +254,6 @@ export const streamChatWithData = async (
         }
       }
     }
-    run.output = { messages: streamValue };
-    run.endTime = new Date().toISOString();
     await Promise.all(
       streamValue.map((message) =>
         thread
@@ -267,6 +265,9 @@ export const streamChatWithData = async (
           .send()
       )
     );
+    run.output = { messages: streamValue };
+    run.endTime = new Date().toISOString();
+    run.send();
     stream.done();
   })();
 
