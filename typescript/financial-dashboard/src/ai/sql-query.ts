@@ -36,11 +36,18 @@ export type QueryResult<T = unknown> = {
 };
 
 export const queryDatabase = async <T = unknown>(
-  literalAiParent: Step,
+  parent: Step,
   query: string,
   columnNames?: string[]
 ): Promise<QueryResult<T>> => {
-  literalAiParent.input = { query, columnNames };
+  const step = await parent
+    .step({
+      type: "tool",
+      name: "Query Database",
+      input: { query, columnNames },
+      startTime: new Date().toISOString(),
+    })
+    .send();
 
   const messages: CoreMessage[] = [
     {
@@ -70,7 +77,7 @@ export const queryDatabase = async <T = unknown>(
   let lastError: any = null;
   for (let attempts = 1; attempts <= 5; attempts++) {
     const generation = await generateText({
-      literalAiParent,
+      literalAiParent: step,
       model: openai("gpt-3.5-turbo"),
       messages,
       temperature: 0.25,
@@ -81,8 +88,9 @@ export const queryDatabase = async <T = unknown>(
 
     try {
       const result = db.prepare(query).all() as T[];
-      literalAiParent.output = { result, query, attempts };
-      await literalAiParent.send();
+      step.output = { result, query, attempts };
+      step.endTime = new Date().toISOString();
+      await step.send();
       return { result, query, attempts };
     } catch (error) {
       messages.push(

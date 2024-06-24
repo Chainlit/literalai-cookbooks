@@ -1,7 +1,6 @@
 "use server";
 
 import { CoreMessage } from "ai";
-import { createStreamableValue } from "ai/rsc";
 
 import { streamChatWithData } from "./ai/data-chat";
 import { literalClient } from "./lib/literal";
@@ -14,9 +13,15 @@ export const continueConversationWithData = async (
     .thread({ id: threadId, name: "Showroom" })
     .upsert();
 
-  const run = await thread.step({ type: "run", name: "Answer" }).send();
+  await thread
+    .step({
+      type: "user_message",
+      name: "User",
+      output: history[history.length - 1],
+    })
+    .send();
 
-  const stream = await streamChatWithData(run, history);
+  const stream = await streamChatWithData(thread, history);
   return stream;
 };
 

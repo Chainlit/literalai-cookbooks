@@ -3,7 +3,7 @@
 import { randomUUID } from "crypto";
 
 import { openai } from "@ai-sdk/openai";
-import { Step } from "@literalai/client";
+import { Thread } from "@literalai/client";
 import {
   CoreMessage,
   streamText as streamTextWithoutMonitoring,
@@ -26,21 +26,25 @@ type BotMessage =
   | { type: "component"; runId: string; name: string; props: unknown };
 
 export const streamChatWithData = async (
-  literalAiParent: Step,
+  thread: Thread,
   history: CoreMessage[]
 ) => {
-  literalAiParent.id = literalAiParent.id ?? randomUUID();
-  literalAiParent.input = { history };
+  const run = await thread
+    .step({
+      type: "run",
+      name: "Answer",
+      id: randomUUID(),
+      input: { history },
+      startTime: new Date().toISOString(),
+    })
+    .send();
 
   const queryDatabaseSimple = async (query: string, columnNames?: string[]) => {
-    const step = await literalAiParent
-      .step({ type: "tool", name: "Query Database" })
-      .send();
-    const { result } = await queryDatabase<any>(step, query, columnNames);
+    const { result } = await queryDatabase<any>(run, query, columnNames);
     return result;
   };
 
-  const runId = literalAiParent.id;
+  const runId = run.id!;
 
   const querySchema = z
     .string()
@@ -95,7 +99,7 @@ export const streamChatWithData = async (
   };
 
   const result = await streamText({
-    literalAiParent,
+    literalAiParent: run,
     model: openai("gpt-4o"),
     system: [
       "You are a copilot on a data dashboard for a company selling GPUs.",
@@ -214,7 +218,7 @@ export const streamChatWithData = async (
         execute: async ({ query }) => {
           const result = await queryDatabaseSimple(query);
           const subResult = await streamText({
-            literalAiParent,
+            literalAiParent: run,
             model: openai("gpt-3.5-turbo"),
             messages: [
               ...history,
@@ -250,8 +254,19 @@ export const streamChatWithData = async (
         }
       }
     }
-    literalAiParent.output = { messages: streamValue };
-    await literalAiParent.send();
+    run.output = { messages: streamValue };
+    run.endTime = new Date().toISOString();
+    await Promise.all(
+      streamValue.map((message) =>
+        thread
+          .step({
+            type: "assistant_message",
+            name: "Bot Message",
+            output: message,
+          })
+          .send()
+      )
+    );
     stream.done();
   })();
 
