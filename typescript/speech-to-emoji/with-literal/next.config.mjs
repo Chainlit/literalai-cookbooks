@@ -7,7 +7,7 @@ const nextConfig = {
       config.resolve.fallback.fs = false;
     }
 
-    // This is necessary because of a binary dependency in openai
+    // This is necessary because of a binary dependency in llamaindex
     config.module.rules.push({
       test: /\.node$/,
       use: "node-loader",
