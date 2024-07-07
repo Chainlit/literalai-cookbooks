@@ -1,0 +1,4 @@
+python-dotenv>=1.0.1
+ragas>=0.1.7
+literalai>=0.0.503
+openai   
