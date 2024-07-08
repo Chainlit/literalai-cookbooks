@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@literalai/client": "^0.0.503",
+    "@literalai/client": "^0.0.508",
     "promptfoo": "^0.48.0",
     "tsc-watch": "^6.2.0",
     "typescript": "^5.4.4"
