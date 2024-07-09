@@ -16,6 +16,7 @@
     "typescript": "^5.4.4"
   },
   "dependencies": {
-    "@literalai/client": "file:../../../cl-typescript-client/literalai-client-0.0.509.tgz"
+    "@literalai/client": "file:../../../cl-typescript-client/literalai-client-0.0.509.tgz",
+    "dotenv": "^16.4.5"
   }
 }

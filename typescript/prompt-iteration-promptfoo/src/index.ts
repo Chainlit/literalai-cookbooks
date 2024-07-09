@@ -1,14 +1,15 @@
-import { Dataset, IGenerationMessage, LiteralClient } from '@literalai/client';
+import { Dataset, IGenerationMessage, LiteralClient } from "@literalai/client";
+import "dotenv/config";
 
-import promptTemplate_1 from '../promptTemplate_1.json';
-import promptTemplate_2 from '../promptTemplate_2.json';
-import { evaluateWithPromptfoo } from './promptFooHelpers';
-import { runApplication } from './wildlifeAssistant';
+import promptTemplate_1 from "../promptTemplate_1.json";
+import promptTemplate_2 from "../promptTemplate_2.json";
+import { evaluateWithPromptfoo } from "./promptFooHelpers";
+import { runApplication } from "./wildlifeAssistant";
 
 export const client = new LiteralClient();
 
-const DATASET_NAME = 'Animal Facts Dataset';
-const PROMPT_TEMPLATE_NAME = 'Animal Facts Template';
+const DATASET_NAME = "Animal Facts Dataset";
+const PROMPT_TEMPLATE_NAME = "Animal Facts Template";
 const MAX_NUMBER_OF_GENERATIONS = 3;
 
 const createDataset = async () => {
@@ -22,7 +23,7 @@ const createDataset = async () => {
   );
 
   const existingDataset = await client.api.getDataset({
-    name: DATASET_NAME
+    name: DATASET_NAME,
   });
 
   if (existingDataset) return { dataset: existingDataset, promptTemplate };
@@ -32,8 +33,8 @@ const createDataset = async () => {
    */
   const dataset: Dataset = await client.api.createDataset({
     name: DATASET_NAME,
-    description: 'Dataset to evaluate our prompt template.',
-    type: 'generation'
+    description: "Dataset to evaluate our prompt template.",
+    type: "generation",
   });
 
   /**
@@ -49,11 +50,11 @@ const createDataset = async () => {
       first: MAX_NUMBER_OF_GENERATIONS,
       filters: [
         {
-          field: 'promptLineage',
-          operator: 'eq',
-          value: PROMPT_TEMPLATE_NAME
-        }
-      ]
+          field: "promptLineage",
+          operator: "eq",
+          value: PROMPT_TEMPLATE_NAME,
+        },
+      ],
     })
   ).data;
 
@@ -73,7 +74,7 @@ const main = async () => {
   const { dataset, promptTemplate } = await createDataset();
 
   await evaluateWithPromptfoo(
-    'Animal Facts Experiment',
+    "Animal Facts Experiment",
     dataset,
     promptTemplate
   );
@@ -88,7 +89,7 @@ const main = async () => {
   );
 
   await evaluateWithPromptfoo(
-    'Wild life Experiment',
+    "Wild life Experiment",
     dataset,
     promptTemplateEnhanced
   );
