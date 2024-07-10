@@ -1,13 +1,13 @@
 "use client";
 
-import { JSONValue } from "ai";
-import { useChat } from "ai/react";
+import { useChat } from "@ai-sdk/react";
+import { JSONValue } from "@ai-sdk/ui-utils";
 import { useEffect, useState } from "react";
 
 // This method is used to narrow down the type of the dataFrame object
 // from JSONValue to a more specific type that we can work with.
 const isValidDataFrame = (
-  dataFrame: JSONValue
+  dataFrame: JSONValue | undefined
 ): dataFrame is { stepId: string } => {
   if (!dataFrame) return false;
   if (typeof dataFrame !== "object") return false;

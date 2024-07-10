@@ -56,7 +56,7 @@ export default function Home() {
       const center = map.getCenter();
       setLat(center.lat);
       setLng(center.lng);
-    }, 1e3);
+    }, 1_000);
     return () => clearInterval(timeout);
   }, [map]);
 
