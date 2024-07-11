@@ -23,82 +23,87 @@ export async function POST(req: NextRequest) {
     return new NextResponse("No audio file provided", { status: 400 });
   }
 
-  // Create or retrieve the thread
-  const thread = await literalClient
-    .thread({ name: "Speech to Emoji Thread" })
-    .upsert();
-
   // This is necessary to convert the Blob to a ReadableStream that can be uploaded to Literal
   const nodeStream = Readable.fromWeb(
     formAudio.stream() as ReadableStream<any>
   );
 
-  // Upload the file to Literal and add it as an attachment
-  const { objectKey } = await literalClient.api.uploadFile({
-    content: nodeStream,
-    threadId: thread.id,
-    mime: "audio/webm",
-  });
-  const attachment = new Attachment({
-    name: "Audio file",
-    objectKey,
-    mime: "audio/webm",
-  });
+  // Create or retrieve the thread
+  const transcribedText = await literalClient
+    .thread({ name: "Speech to Emoji Thread" })
+    .wrap(async () => {
+      // Upload the file to Literal and add it as an attachment
+      const { objectKey } = await literalClient.api.uploadFile({
+        content: nodeStream,
+        threadId: literalClient.getCurrentThread().id,
+        mime: "audio/webm",
+      });
+      const attachment = new Attachment({
+        name: "Audio file",
+        objectKey,
+        mime: "audio/webm",
+      });
 
-  // Create the run with the attached audio file
-  const run = await thread
-    .step({
-      id: runId,
-      type: "run",
-      name: "Speech to Emoji",
-      input: {
-        input: { content: "Audio file" },
-        attachments: [attachment],
-      },
-    })
-    .send();
+      // Wrap the transcription in the run
+      return literalClient
+        .run({
+          id: runId,
+          name: "Speech to Emoji",
+          input: {
+            input: { content: "Audio file" },
+            attachments: [attachment],
+          },
+        })
+        .wrap(async () => {
+          // Create a step for the transcription
+          const transcribedText = await literalClient
+            .step({
+              type: "llm",
+              name: "whisper-1",
+              input: { role: "user", content: "See attached audio file" },
+              attachments: [attachment],
+            })
+            .wrap(async () => {
+              // Convert the file to a format that OpenAI can process
+              const webmArrayBuffer = await formAudio.arrayBuffer();
+              const audioFile = await toFile(
+                webmArrayBuffer,
+                `${formAudio.name}.webm`
+              );
 
-  const start = new Date();
+              // Call the OpenAI API to transcribe the audio
+              const { text: transcribedText } =
+                await openai.audio.transcriptions.create({
+                  file: audioFile,
+                  model: "whisper-1",
+                  language: "en",
+                });
 
-  // Convert the file to a format that OpenAI can process
-  const webmArrayBuffer = await formAudio.arrayBuffer();
-  const audioFile = await toFile(webmArrayBuffer, `${formAudio.name}.webm`);
-  const { text: transcribedText } = await openai.audio.transcriptions.create({
-    file: audioFile,
-    model: "whisper-1",
-    language: "en",
-  });
+              literalClient.getCurrentStep().output = {
+                role: "assistant",
+                content: transcribedText,
+              };
+              literalClient.getCurrentStep().generation = {
+                type: "CHAT",
+                provider: "openai",
+                model: "whisper-1",
+                messages: [
+                  { role: "user", content: "See attached audio file" },
+                ],
+                messageCompletion: {
+                  role: "assistant",
+                  content: transcribedText,
+                },
+              };
 
-  const end = new Date();
+              return transcribedText;
+            });
 
-  const input: IGenerationMessage = {
-    role: "user",
-    content: "See attached audio file",
-  };
-  const output: IGenerationMessage = {
-    role: "assistant",
-    content: transcribedText,
-  };
+          literalClient.getCurrentStep().endTime = new Date().toISOString();
 
-  // Create the Transcription step
-  await run
-    .step({
-      type: "llm",
-      name: "whisper-1",
-      input,
-      output,
-      attachments: [attachment],
-      startTime: start.toISOString(),
-      endTime: end.toISOString(),
-      generation: {
-        type: "CHAT",
-        provider: "openai",
-        model: "whisper-1",
-        messages: [input],
-        messageCompletion: output,
-      },
-    })
-    .send();
+          return transcribedText;
+        });
+    });
 
   return Response.json({ transcribedText });
 }

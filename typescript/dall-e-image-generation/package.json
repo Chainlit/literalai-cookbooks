@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@literalai/client": "^0.0.508",
+    "@literalai/client": "^0.0.509",
     "dotenv": "^16.4.5",
     "openai": "^4.48.3"
   },

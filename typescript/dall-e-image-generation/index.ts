@@ -6,33 +6,28 @@ import OpenAI from "openai";
 
 import { Attachment, LiteralClient } from "@literalai/client";
 
-const run = async () => {
-  // Initialize the OpenAI to use Dall-E
-  const openai = new OpenAI();
+// Initialize the OpenAI to use Dall-E
+const openai = new OpenAI();
 
-  // Initialize the Literal Client
-  const literalClient = new LiteralClient();
-  const thread = await literalClient.thread({ name: "Simple Dall-E" }).upsert();
+// Initialize the Literal Client
+const literalClient = new LiteralClient();
 
-  // Create a readline interface to interact with the user
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-
-  try {
-    while (true) {
-      const query = await rl.question("Prompt: ");
-
-      const startTime = new Date();
-
+const generateImage = async (prompt: string) => {
+  return literalClient
+    .step({
+      name: "Generation",
+      type: "llm",
+      input: { prompt },
+    })
+    .wrap(async () => {
       const response = await openai.images.generate({
-        prompt: query,
+        prompt: prompt,
         size: "256x256",
         n: 1,
       });
 
-      const endTime = new Date();
+      literalClient.getCurrentStep().endTime = new Date().toISOString();
+      literalClient.getCurrentStep().output = response;
 
       const openAiUrl = response.data[0].url!;
       const localPath = `images/${Date.now()}.png`;
@@ -45,7 +40,7 @@ const run = async () => {
         await literalClient.api.uploadFile({
           path: localPath,
           mime: "image/png",
-          threadId: thread.id,
+          threadId: literalClient.getCurrentThread().id,
         });
 
       const attachment = new Attachment({
@@ -54,34 +49,42 @@ const run = async () => {
         mime: "image/png",
       });
 
-      // Create a step in Literal AI
-      await thread
-        .step({
-          name: "Generation",
-          type: "llm",
-          startTime: startTime.toISOString(),
-          endTime: endTime.toISOString(),
-          input: { query },
-          output: response,
-          attachments: [attachment],
-        })
-        .send();
+      literalClient.getCurrentStep().attachments = [attachment];
 
-      console.log(literalAiUrl);
-      console.log();
-    }
-  } catch (err) {
-    console.log("Error: ", err);
-  } finally {
-    rl.close();
-  }
-  process.exit(1);
+      return literalAiUrl;
+    });
 };
 
 const download = async (uri: string, filepath: string) => {
   const res = await fetch(uri);
   const content = await res.arrayBuffer();
   await fs.writeFile(filepath, Buffer.from(content));
+};
+
+const run = async () => {
+  // Create a readline interface to interact with the user
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  await literalClient.thread({ name: "Simple Dall-E" }).wrap(async () => {
+    try {
+      while (true) {
+        const query = await rl.question("Prompt: ");
+
+        const url = await generateImage(query);
+
+        console.log({ query, url });
+      }
+    } catch (err) {
+      console.log("Error: ", err);
+    } finally {
+      rl.close();
+    }
+  });
+
+  process.exit(1);
 };
 
 run();

@@ -26,11 +26,11 @@ export async function POST(req: NextRequest) {
   const promptMessages = prompt.formatMessages();
 
   // Fetch the run and convert it to a Step instance
-  const runData = await literalClient.api.getStep(runId);
-  if (!runData) {
+  const run = await literalClient.api.getStep(runId);
+
+  if (!run) {
     return new NextResponse("Run not found", { status: 404 });
   }
-  const run = literalClient.step(runData);
 
   // Call the LLM and instrument the result so it is logged with all parameters in the run
   const completion = await openai.chat.completions.create({

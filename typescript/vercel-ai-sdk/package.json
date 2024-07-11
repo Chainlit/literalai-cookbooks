@@ -10,9 +10,10 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^0.0.31",
-    "@literalai/client": "^0.0.508",
+    "@literalai/client": "^0.0.509",
     "ai": "^3.2.1",
     "next": "14.2.3",
+    "node-loader": "^2.0.0",
     "openai": "^4.40.1",
     "react": "^18",
     "react-dom": "^18",
