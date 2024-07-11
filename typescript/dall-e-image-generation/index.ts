@@ -62,8 +62,6 @@ const download = async (uri: string, filepath: string) => {
 };
 
 const run = async () => {
-  const thread = await literalClient.thread({ name: "Simple Dall-E" }).upsert();
-
   // Create a readline interface to interact with the user
   const rl = readline.createInterface({
     input: process.stdin,

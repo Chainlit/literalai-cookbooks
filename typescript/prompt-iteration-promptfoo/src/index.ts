@@ -70,7 +70,6 @@ const main = async () => {
   /**
    * Evaluate the prompt template with promptfoo and create experiment on Literal.
    */
-
   const { dataset, promptTemplate } = await createDataset();
 
   await evaluateWithPromptfoo(
