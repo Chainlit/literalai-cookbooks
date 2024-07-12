@@ -12,6 +12,9 @@ const openai = new OpenAI();
 // Initialize the Literal Client
 const literalClient = new LiteralClient();
 
+// Instrument the OpenAI API calls
+literalClient.instrumentation.openai();
+
 const run = async () => {
   // You need to provide an OpenAI API key, here we read it from the OPENAI_API_KEY environment variable
   const apiKey = process.env.OPENAI_API_KEY!;
@@ -61,12 +64,6 @@ const run = async () => {
               frequency_penalty: 0,
               presence_penalty: 0,
             });
-
-            // Use instrumentation to monitor the OpenAI call
-            await literalClient.instrumentation.openai(
-              response,
-              literalClient.getCurrentStep()
-            );
 
             return response.choices[0].message;
           });

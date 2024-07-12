@@ -7,6 +7,7 @@ import OpenAI from "openai";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const literalClient = new LiteralClient();
+literalClient.instrumentation.openai();
 
 export async function POST(req: NextRequest) {
   const { text, runId } = await req.json();
@@ -32,24 +33,16 @@ export async function POST(req: NextRequest) {
     return new NextResponse("Run not found", { status: 404 });
   }
 
-  // Call the LLM and instrument the result so it is logged with all parameters in the run
-  const completion = await openai.chat.completions.create({
-    ...prompt.settings,
-    messages: [...promptMessages, { role: "user", content: text }],
+  const response = run.wrap(async () => {
+    const completion = await openai.chat.completions.create({
+      ...prompt.settings,
+      messages: [...promptMessages, { role: "user", content: text }],
+    });
+
+    return completion.choices[0].message.content;
   });
 
-  await literalClient.instrumentation.openai(completion, run);
-
-  // We patch the run to add the end time so it shows the correct duration
-  // We also add the output to the run
-  run.endTime = new Date().toISOString();
-  run.output = {
-    role: "assistant",
-    content: completion.choices[0].message.content,
-  };
-  await run.send();
-
   return Response.json({
-    emojifiedText: completion.choices[0].message.content,
+    emojifiedText: response,
   });
 }

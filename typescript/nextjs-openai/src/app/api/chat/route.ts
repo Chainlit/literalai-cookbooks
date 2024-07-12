@@ -4,6 +4,7 @@ import { LiteralClient } from "@literalai/client";
 
 const openai = new OpenAI();
 const literalClient = new LiteralClient();
+literalClient.instrumentation.openai();
 
 export async function POST(req: Request) {
   const { messages: chatMessages, threadId, runId } = await req.json();
@@ -41,8 +42,6 @@ export async function POST(req: Request) {
             messages: [...promptMessages, ...chatMessages],
             ...prompt.settings,
           });
-
-          literalClient.instrumentation.openai(result, run);
 
           // We want the response as a stream
           const stream = OpenAIStream(result, {

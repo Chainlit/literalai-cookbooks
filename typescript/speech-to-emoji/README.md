@@ -183,6 +183,11 @@ await run
 Next in `src/app/api/emojify/route.ts`, we need to fetch the run and add the second step for the summarization. This time, we will make use of the built-in OpenAI instrumentation provided by the Literal AI SDK. This not only logs the latency, but also token counts and model parameters.
 
 ```ts
+// Instrument the call to OpenAI
+literalClient.instrumentation.openai();
+
+// ...
+
 // Fetch the run
 const runData = await literalClient.api.getStep(runId);
 if (!runData) {
@@ -196,8 +201,6 @@ const completion = await openai.chat.completions.create({
   ...prompt.settings,
   messages: [...promptMessages, { role: "user", content: text }],
 });
-// Instrument the call to OpenAI using Literal AI SDK
-await literalClient.instrumentation.openai(completion, run);
 ```
 
 Lastly, we will patch the Run by providing its end time and the completion data. This allows us to monitor the perceived overall latency of each run, including network latency from one call to the other.
