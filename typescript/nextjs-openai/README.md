@@ -10,6 +10,9 @@ First, install dependencies
 npm install
 ```
 
+From Literal AI, create a prompt of your choice named "Simple Chatbot".
+The Next.js application relies on this prompt to format the user messages.
+
 Then, run the development server:
 
 ```bash
