@@ -7,6 +7,7 @@ import { Prompt } from "@literalai/client";
 import { client } from "./index";
 
 const openai = new OpenAI();
+client.instrumentation.openai();
 
 async function wildlifeAssistant(messages: ChatCompletionMessageParam[]) {
   return client
@@ -20,7 +21,7 @@ async function wildlifeAssistant(messages: ChatCompletionMessageParam[]) {
         messages: messages,
       });
 
-      await client.instrumentation.openai(completion, client.getCurrentStep());
+      return completion;
     });
 }
 
