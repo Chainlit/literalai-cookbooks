@@ -4,7 +4,7 @@ import fs from "node:fs/promises";
 import readline from "node:readline/promises";
 import OpenAI from "openai";
 
-import { Attachment, LiteralClient } from "@literalai/client";
+import { LiteralClient } from "@literalai/client";
 
 // Initialize the OpenAI to use Dall-E
 const openai = new OpenAI();
@@ -36,20 +36,12 @@ const generateImage = async (prompt: string) => {
       await download(openAiUrl, localPath);
 
       // Upload the image to Literal AI
-      const { objectKey, url: literalAiUrl } =
-        await literalClient.api.uploadFile({
-          path: localPath,
-          mime: "image/png",
-          threadId: literalClient.getCurrentThread().id,
-        });
-
-      const attachment = new Attachment({
+      const { url: literalAiUrl } = await literalClient.api.createAttachment({
         name: "result",
-        objectKey,
+        path: localPath,
         mime: "image/png",
+        threadId: literalClient.getCurrentThread().id,
       });
-
-      literalClient.getCurrentStep().attachments = [attachment];
 
       return literalAiUrl;
     });

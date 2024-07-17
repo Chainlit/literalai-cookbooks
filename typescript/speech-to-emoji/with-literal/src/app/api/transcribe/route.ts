@@ -1,15 +1,9 @@
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-import {
-  Attachment,
-  IGenerationMessage,
-  LiteralClient,
-} from "@literalai/client";
+import { LiteralClient } from "@literalai/client";
 import { NextRequest, NextResponse } from "next/server";
-import OpenAI, { toFile } from "openai";
-import { ReadableStream } from "stream/web";
-import { Readable } from "stream";
+import OpenAI from "openai";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const literalClient = new LiteralClient();
@@ -23,25 +17,16 @@ export async function POST(req: NextRequest) {
     return new NextResponse("No audio file provided", { status: 400 });
   }
 
-  // This is necessary to convert the Blob to a ReadableStream that can be uploaded to Literal
-  const nodeStream = Readable.fromWeb(
-    formAudio.stream() as ReadableStream<any>
-  );
-
   // Create or retrieve the thread
   const transcribedText = await literalClient
     .thread({ name: "Speech to Emoji Thread" })
     .wrap(async () => {
       // Upload the file to Literal and add it as an attachment
-      const { objectKey } = await literalClient.api.uploadFile({
-        content: nodeStream,
+      const attachment = await literalClient.api.createAttachment({
+        content: formAudio,
         threadId: literalClient.getCurrentThread().id,
         mime: "audio/webm",
-      });
-      const attachment = new Attachment({
         name: "Audio file",
-        objectKey,
-        mime: "audio/webm",
       });
 
       // Wrap the transcription in the run
@@ -64,17 +49,13 @@ export async function POST(req: NextRequest) {
               attachments: [attachment],
             })
             .wrap(async () => {
-              // Convert the file to a format that OpenAI can process
-              const webmArrayBuffer = await formAudio.arrayBuffer();
-              const audioFile = await toFile(
-                webmArrayBuffer,
-                `${formAudio.name}.webm`
-              );
+              const form = new FormData();
+              form.append("file", formAudio, "audio.webm");
 
               // Call the OpenAI API to transcribe the audio
               const { text: transcribedText } =
                 await openai.audio.transcriptions.create({
-                  file: audioFile,
+                  file: form.get("file") as any,
                   model: "whisper-1",
                   language: "en",
                 });

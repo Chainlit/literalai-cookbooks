@@ -14,7 +14,7 @@
     "docker:run": "docker run --env-file .env.docker -p 3001:3000 dambuty/emojifier"
   },
   "dependencies": {
-    "@literalai/client": "^0.0.509",
+    "@literalai/client": "file:../../../../cl-typescript-client/literalai-client-0.0.510.tgz",
     "clsx": "^2.1.1",
     "form-data": "^4.0.0",
     "mime-types": "^2.1.35",

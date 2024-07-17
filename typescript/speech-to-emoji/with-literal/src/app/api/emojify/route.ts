@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     return new NextResponse("Run not found", { status: 404 });
   }
 
-  const response = run.wrap(async () => {
+  const response = await run.wrap(async () => {
     const completion = await openai.chat.completions.create({
       ...prompt.settings,
       messages: [...promptMessages, { role: "user", content: text }],
