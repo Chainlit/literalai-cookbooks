@@ -49,6 +49,8 @@ export async function POST(req: NextRequest) {
               attachments: [attachment],
             })
             .wrap(async () => {
+              // This step is necessary as the OpenAI API will reject our request
+              // if the file isn't properly named with a recognized extension
               const form = new FormData();
               form.append("file", formAudio, "audio.webm");
 
