@@ -40,7 +40,6 @@ const generateImage = async (prompt: string) => {
         name: "result",
         path: localPath,
         mime: "image/png",
-        threadId: literalClient.getCurrentThread().id,
       });
 
       return literalAiUrl;
@@ -60,7 +59,7 @@ const run = async () => {
     output: process.stdout,
   });
 
-  await literalClient.thread({ name: "Simple Dall-E" }).wrap(async () => {
+  await literalClient.run({ name: "Simple Dall-E" }).wrap(async () => {
     try {
       while (true) {
         const query = await rl.question("Prompt: ");

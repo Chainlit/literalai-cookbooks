@@ -24,7 +24,6 @@ export async function POST(req: NextRequest) {
       // Upload the file to Literal and add it as an attachment
       const attachment = await literalClient.api.createAttachment({
         content: formAudio,
-        threadId: literalClient.getCurrentThread().id,
         mime: "audio/webm",
         name: "Audio file",
       });
