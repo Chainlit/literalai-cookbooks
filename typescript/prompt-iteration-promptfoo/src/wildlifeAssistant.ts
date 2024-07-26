@@ -2,9 +2,9 @@ import OpenAI from "openai";
 import { ChatCompletionMessageParam } from "openai/resources";
 import "dotenv/config";
 
-import { Prompt } from "@literalai/client";
+import { LiteralClient, Prompt } from "@literalai/client";
 
-import { client } from "./index";
+export const client = new LiteralClient();
 
 const openai = new OpenAI();
 client.instrumentation.openai();
@@ -21,7 +21,7 @@ async function wildlifeAssistant(messages: ChatCompletionMessageParam[]) {
         messages: messages,
       });
 
-      return completion;
+      return completion.choices[0].message.content;
     });
 }
 
@@ -47,8 +47,8 @@ export async function runApplication(promptTemplate: Prompt) {
 
       return client
         .step({
-          type: "user_message",
-          name: "User",
+          type: "assistant_message",
+          name: "Assistant",
         })
         .wrap(() => wildlifeAssistant(messages));
     });
