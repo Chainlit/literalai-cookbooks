@@ -122,38 +122,30 @@ To facilitate its use, we will generate the Run ID from the frontend using `cryp
 In the `src/app/api/transcribe/route.ts` let's then create a [thread](https://docs.getliteral.ai/concepts/observability/thread) for each run. This is a bit of a hack as the interaction is not really a threaded conversation, however it is necessary so that we can upload Audio files.
 
 ```ts
-// Create or retrieve the thread
-const thread = await literalClient
+const transcribedText = await literalClient
   .thread({ name: "Speech to Emoji Thread" })
-  .upsert();
+  .wrap(async () => {
+    // Upload the file to Literal and add it as an attachment
+    const attachment = await literalClient.api.createAttachment({
+      content: formAudio,
+      threadId: literalClient.getCurrentThread().id,
+      mime: "audio/webm",
+      name: "Audio file",
+    });
 
-// We receive the file from the frontend as a Blob, however Literal expects a ReadableStream so we have to convert it
-const nodeStream = Readable.fromWeb(formAudio.stream() as ReadableStream<any>);
-
-// Upload the file to Literal and add it as an attachment
-const { objectKey } = await literalClient.api.uploadFile({
-  content: nodeStream,
-  threadId: thread.id,
-  mime: "audio/webm",
-});
-const attachment = new Attachment({
-  name: "Audio file",
-  objectKey,
-  mime: "audio/webm",
-});
-
-// Create the run with the attached audio file
-const run = await thread
-  .step({
-    id: runId,
-    type: "run",
-    name: "Speech to Emoji",
-    input: {
-      input: { content: "Audio file" },
-      attachments: [attachment],
-    },
-  })
-  .send();
+    // Create the run with the attached audio file
+    const run = await thread
+      .step({
+        id: runId,
+        type: "run",
+        name: "Speech to Emoji",
+        input: {
+          input: { content: "Audio file" },
+          attachments: [attachment],
+        },
+      })
+      .wrap(/* ... */);
+  });
 ```
 
 ### Logging the steps
