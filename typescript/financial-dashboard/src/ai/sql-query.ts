@@ -2,7 +2,6 @@
 
 import { rawDatabase as db } from "@/db";
 import { openai } from "@ai-sdk/openai";
-import { Step } from "@literalai/client";
 import {
   generateText as generateTextWithoutMonitoring,
   type CoreMessage,
@@ -36,70 +35,68 @@ export type QueryResult<T = unknown> = {
 };
 
 export const queryDatabase = async <T = unknown>(
-  parent: Step,
   query: string,
   columnNames?: string[]
 ): Promise<QueryResult<T>> => {
-  const step = await parent
+  return literalClient
     .step({
       type: "tool",
       name: "Query Database",
       input: { query, columnNames },
-      startTime: new Date().toISOString(),
     })
-    .send();
-
-  const messages: CoreMessage[] = [
-    {
-      role: "system",
-      content: [
-        "Given the following SQLite tables, your job is to write queries given a user’s request.",
-        "Escape table and column names with double quotes.",
-        "",
-        getSqlSchema(db),
-        "",
-        "Write a SQLite query for the following request:",
-      ].join("\n"),
-    },
-    {
-      role: "user",
-      content: columnNames
-        ? [
-            query,
+    .wrap(async () => {
+      const messages: CoreMessage[] = [
+        {
+          role: "system",
+          content: [
+            "Given the following SQLite tables, your job is to write queries given a user’s request.",
+            "Escape table and column names with double quotes.",
             "",
-            "the output should have the following columns:",
-            columnNames.join(", "),
-          ].join("\n")
-        : query,
-    },
-  ];
+            getSqlSchema(db),
+            "",
+            "Write a SQLite query for the following request:",
+          ].join("\n"),
+        },
+        {
+          role: "user",
+          content: columnNames
+            ? [
+                query,
+                "",
+                "the output should have the following columns:",
+                columnNames.join(", "),
+              ].join("\n")
+            : query,
+        },
+      ];
 
-  let lastError: any = null;
-  for (let attempts = 1; attempts <= 5; attempts++) {
-    const generation = await generateText({
-      literalAiParent: step,
-      model: openai("gpt-3.5-turbo"),
-      messages,
-      temperature: 0.25,
+      let lastError: any = null;
+      for (let attempts = 1; attempts <= 5; attempts++) {
+        const generation = await generateText({
+          model: openai("gpt-3.5-turbo"),
+          messages,
+          temperature: 0.25,
+        });
+
+        const text = await generation.text;
+
+        const query = text.match(/```sql\n((?:.|\n)+)\n```/)?.[1] ?? text;
+
+        try {
+          const result = db.prepare(query).all() as T[];
+          return { result, query, attempts };
+        } catch (error) {
+          messages.push(
+            { role: "assistant", content: text },
+            {
+              role: "user",
+              content: "That query is invalid. Please try again.",
+            }
+          );
+          lastError = error;
+        }
+      }
+
+      throw lastError;
     });
-
-    const query =
-      generation.text.match(/```sql\n((?:.|\n)+)\n```/)?.[1] ?? generation.text;
-
-    try {
-      const result = db.prepare(query).all() as T[];
-      step.output = { result, query, attempts };
-      step.endTime = new Date().toISOString();
-      await step.send();
-      return { result, query, attempts };
-    } catch (error) {
-      messages.push(
-        { role: "assistant", content: generation.text },
-        { role: "user", content: "That query is invalid. Please try again." }
-      );
-      lastError = error;
-    }
-  }
-
-  throw lastError;
 };

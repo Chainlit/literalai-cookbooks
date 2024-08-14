@@ -9,20 +9,18 @@ export const continueConversationWithData = async (
   history: CoreMessage[],
   threadId: string
 ) => {
-  const thread = await literalClient
-    .thread({ id: threadId, name: "Showroom" })
-    .upsert();
+  return literalClient.thread({ id: threadId }).wrap(async () => {
+    await literalClient
+      .step({
+        type: "user_message",
+        name: "User",
+        output: history[history.length - 1],
+      })
+      .send();
 
-  await thread
-    .step({
-      type: "user_message",
-      name: "User",
-      output: history[history.length - 1],
-    })
-    .send();
-
-  const stream = await streamChatWithData(thread, history);
-  return stream;
+    const stream = await streamChatWithData(history);
+    return stream;
+  });
 };
 
 export const evaluateRun = async (runId: string, value: number) => {
