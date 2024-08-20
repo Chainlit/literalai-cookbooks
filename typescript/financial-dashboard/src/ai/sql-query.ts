@@ -73,7 +73,7 @@ export const queryDatabase = async <T = unknown>(
       let lastError: any = null;
       for (let attempts = 1; attempts <= 5; attempts++) {
         const generation = await generateText({
-          model: openai("gpt-3.5-turbo"),
+          model: openai("gpt-4o"),
           messages,
           temperature: 0.25,
         });

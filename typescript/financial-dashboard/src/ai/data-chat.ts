@@ -88,6 +88,7 @@ export const streamChatWithData = async (history: CoreMessage[]) => {
         stream.update(streamValue);
       };
 
+      
       const result = await streamText({
         model: openai("gpt-4o"),
         system: [
@@ -213,7 +214,7 @@ export const streamChatWithData = async (history: CoreMessage[]) => {
             execute: async ({ query }) => {
               const result = await queryDatabaseSimple(query);
               const subResult = await streamText({
-                model: openai("gpt-3.5-turbo"),
+                model: openai("gpt-4o"),
                 messages: [
                   ...history,
                   {
