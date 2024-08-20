@@ -19,6 +19,11 @@ For more information, find the full documentation [here](https://docs.getliteral
 | [LlamaIndex Integration](/python/llamaindex-integration/)                                          | Observability                      | Build a Q&A application with LLamaIndex and monitor it with Literal AI.                                                  |
 | [Evaluate Agent Runs with Tools](/python/evaluate-agent-runs/)                                     | Observability (Tools) & Evaluation | Build a simple agent which can use two tools. Monitor and evaluate the tool usage.                                       |
 | [A/B Testing Client-Side](/python/ab-testing-client-side/)                                         | Evaluation                         | Build two prompts, randomly assign to new conversations and A/B test on a metric.                                        |
+| [Create a Dataset](/python/create-a-dataset/)                                         | Evaluation                         | Create a Literal AI Dataset from the SDK                                        |
+| [Distributed Tracing](/python/distributed-tracing/)                                         | Observability                         | Trace a distributed (TS and Py) service                                         |
+| [Monitor a Conversational AI agent](/python/monitor-conversational-ai-agent/)                                         | Observability                         | Monitor a Conversational AI agent, built in FastAPI                                         |
+| [Monitor a Multimodal chatbot](/python/multimodal-conversational-ai/)                                         | Observability                         | Monitor a multimodal Conversational AI agent, built with OpenAI                                         |
+
 
 ### TypeScript
 
