@@ -39,7 +39,7 @@ export default function RootLayoutClient({ children }: Props) {
               </Link>
               <Button size="sm" variant="ghost" asChild>
                 <a
-                  href="https://github.com/Chainlit/literal-cookbook"
+                  href="https://github.com/Chainlit/literalai-cookbooks"
                   target="_blank"
                 >
                   <svg
