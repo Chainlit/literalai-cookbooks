@@ -5,6 +5,7 @@ import {
   CoreMessage,
   streamText as streamTextWithoutMonitoring,
   tool,
+  jsonSchema
 } from "ai";
 import { createStreamableValue } from "ai/rsc";
 import { z } from "zod";
@@ -12,6 +13,7 @@ import { z } from "zod";
 import { literalClient } from "@/lib/literal";
 
 import { queryDatabase } from "./sql-query";
+
 
 const streamText = literalClient.instrumentation.vercel.instrument(
   streamTextWithoutMonitoring
@@ -22,28 +24,11 @@ type BotMessage =
   | { type: "loading"; placeholder: string }
   | { type: "component"; name: string; props: unknown };
 
+
 export const streamChatWithData = async (history: CoreMessage[]) => {
   return literalClient
-    .run({ name: "Answer", input: { history } })
+    .run({ name: "AI Copilot", input: { history } })
     .wrap(async () => {
-      const queryDatabaseSimple = async (
-        query: string,
-        columnNames?: string[]
-      ) => {
-        const { result } = await queryDatabase<any>(query, columnNames);
-        return result;
-      };
-
-      const querySchema = z
-        .string()
-        .describe(
-          [
-            "A natural language query to text to a data expert.",
-            "Use any context provided if possible.",
-            "Do not write SQL, the data expert will handle it.",
-            "You can only read data. Insert, update or delete is not allowed.",
-          ].join("\n")
-        );
 
       let streamValue: BotMessage[] = [];
       const stream = createStreamableValue(streamValue);
@@ -88,151 +73,58 @@ export const streamChatWithData = async (history: CoreMessage[]) => {
         stream.update(streamValue);
       };
 
-      
-      const result = await streamText({
-        model: openai("gpt-4o"),
-        system: [
-          "You are a copilot on a data dashboard for a company selling GPUs.",
-          "You will help the user query the data and view is as charts and tables.",
-          "You will also help the user understand the data by generating text.",
-        ].join("\n"),
-        messages: history,
-        temperature: 0.5,
-        toolChoice: "auto",
-        tools: {
-          displayTable: tool({
-            description: [
-              "Display a table of data.",
-              "Use for large data sets with multiple columns.",
-              "Do not use when you expect one row or one column.",
-            ].join("\n"),
-            parameters: z.object({
-              query: querySchema,
-              outputColumns: z
-                .array(
-                  z.object({
-                    name: z
-                      .string()
-                      .describe("the name of the column in the JSON result"),
-                    label: z
-                      .string()
-                      .describe("the label to display in the table"),
-                  })
-                )
-                .describe(
-                  [
-                    "The columns to display in the table.",
-                    'Example: [{"name": "name", "label": "Name"}, {"name": "age", "label": "Age"}]',
-                  ].join("\n")
-                ),
-            }),
-            execute: async ({ query, outputColumns }) => {
-              const placeholder = appendPlaceholder();
-              const result = await queryDatabaseSimple(
-                query,
-                outputColumns.map((c) => c.name)
-              );
-              return {
-                placeholder,
-                name: "DataTable",
-                props: { columns: outputColumns, rows: result },
-              };
-            },
-          }),
-          displayList: tool({
-            description: [
-              "Display a values.",
-              "Use to answer to a query that returns a list of names or values.",
-              "Do not use when some other information could be useful.",
-            ].join("\n"),
-            parameters: z.object({
-              query: querySchema,
-              outputColumn: z
-                .string()
-                .describe("the name of the column in the JSON result"),
-            }),
-            execute: async ({ query, outputColumn }) => {
-              const placeholder = appendPlaceholder();
-              const result = await queryDatabaseSimple(query, [outputColumn]);
-              return {
-                placeholder,
-                name: "DataList",
-                props: { values: result.map((row) => row[outputColumn]) },
-              };
-            },
-          }),
-          displayBarChart: tool({
-            description: [
-              "Display a list of labelled numeric values as a bar chart.",
-              "Use for data sets with numeric values.",
-              "You need to get 2 columns and include a label.",
-            ].join("\n"),
-            parameters: z.object({
-              query: querySchema,
-              labelOutputColumn: z
-                .string()
-                .describe(
-                  "the name of the column with the label in the JSON result"
-                ),
-              valueOutputColumn: z
-                .string()
-                .describe(
-                  "the name of the column with the value in the JSON result"
-                ),
-            }),
-            execute: async ({
-              query,
-              labelOutputColumn,
-              valueOutputColumn,
-            }) => {
-              const placeholder = appendPlaceholder();
-              const result = await queryDatabaseSimple(query, [
-                labelOutputColumn,
-                valueOutputColumn,
-              ]);
+      const { name, templateMessages, settings, tools } = await import('./prompt.json');
+      console.log(name);
+      const prompt = await literalClient.api.getOrCreatePrompt(
+         name, templateMessages as any, settings, tools 
+      );
 
-              return {
-                placeholder,
-                name: "DataBarChart",
-                props: {
-                  entries: result.map((row) => ({
-                    name: row[labelOutputColumn],
-                    value: row[valueOutputColumn],
-                  })),
-                },
-              };
-            },
-          }),
-          displaySingleValue: tool({
-            description: [
-              "Display a single data point.",
-              "Use to answer very simple question, with a value or a name.",
-            ].join("\n"),
-            parameters: z.object({
-              query: querySchema,
-            }),
-            execute: async ({ query }) => {
-              const result = await queryDatabaseSimple(query);
-              const subResult = await streamText({
-                model: openai("gpt-4o"),
-                messages: [
-                  ...history,
-                  {
-                    role: "system",
-                    content: "With result: " + JSON.stringify(result),
-                  },
-                ],
-              });
+      let messages = prompt.formatMessages()
+      messages = [...messages, ...history];
 
-              for await (const chunk of subResult.textStream) {
-                appendDelta(chunk);
-              }
-              return null;
-            },
-          }),
+      const displayTableJson = tools.find(tool => tool.name === 'displayTable');
+      console.log(messages);
+
+
+      const displayTableTool = tool({
+        description: displayTableJson?.description || '',
+        parameters: jsonSchema<{
+          query: string;
+        }>(displayTableJson?.parameters),
+        execute: async ({ query }) => {
+          console.log("displayTable");
+          const placeholder = appendPlaceholder();
+          const queryResult = await queryDatabase(
+            query
+          );
+          console.log("queryResult");
+          console.log(queryResult);
+          
+          const columns = Object.keys(queryResult.result[0]).map(key => ({
+            name: key,
+            label: key.charAt(0).toUpperCase() + key.slice(1)
+          }));
+          
+          return {
+            placeholder,
+            name: "DataTable",
+            props: { columns: columns, rows: queryResult.result },
+          };
         },
       });
 
+      const availableTools = {
+        displayTable: displayTableTool
+      };
+
+      const result = await streamText({
+        model: openai(settings.model),
+        messages: messages,
+        temperature: settings.temperature,
+        toolChoice: settings.toolChoice as any,
+        tools: availableTools,
+      });
+      
       (async () => {
         for await (const chunk of result.fullStream) {
           switch (chunk.type) {

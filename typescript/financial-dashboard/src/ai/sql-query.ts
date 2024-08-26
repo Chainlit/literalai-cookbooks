@@ -9,6 +9,7 @@ import {
 import { type Database } from "better-sqlite3";
 
 import { literalClient } from "@/lib/literal";
+import sqlPrompt from "./sqlprompt.json";
 
 const generateText = literalClient.instrumentation.vercel.instrument(
   generateTextWithoutMonitoring
@@ -38,6 +39,14 @@ export const queryDatabase = async <T = unknown>(
   query: string,
   columnNames?: string[]
 ): Promise<QueryResult<T>> => {
+  const { name, templateMessages, settings } = await import('./sqlprompt.json');
+  const prompt = await literalClient.api.getOrCreatePrompt(
+    name, templateMessages as any, settings 
+  );
+  const schema = getSqlSchema(db);
+
+  let messages = prompt.formatMessages({schema:schema});
+
   return literalClient
     .step({
       type: "tool",
@@ -45,42 +54,26 @@ export const queryDatabase = async <T = unknown>(
       input: { query, columnNames },
     })
     .wrap(async () => {
-      const messages: CoreMessage[] = [
-        {
-          role: "system",
-          content: [
-            "Given the following SQLite tables, your job is to write queries given a user’s request.",
-            "Escape table and column names with double quotes.",
-            "",
-            getSqlSchema(db),
-            "",
-            "Write a SQLite query for the following request:",
-          ].join("\n"),
-        },
+      messages = [
+        ...messages,
         {
           role: "user",
-          content: columnNames
-            ? [
-                query,
-                "",
-                "the output should have the following columns:",
-                columnNames.join(", "),
-              ].join("\n")
-            : query,
+          content: query,
         },
       ];
 
       let lastError: any = null;
       for (let attempts = 1; attempts <= 5; attempts++) {
         const generation = await generateText({
-          model: openai("gpt-4o"),
+          model: openai(sqlPrompt.settings.model),
           messages,
-          temperature: 0.25,
+          temperature: sqlPrompt.settings.temperature,
         });
 
         const text = await generation.text;
 
         const query = text.match(/```sql\n((?:.|\n)+)\n```/)?.[1] ?? text;
+        console.log(attempts);
 
         try {
           const result = db.prepare(query).all() as T[];

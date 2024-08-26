@@ -1,5 +1,5 @@
 {
-  "name": "GPUDataDashboardCopilot",
+  "name": "GPUDataDashboardAgent",
   "templateMessages": [
     {
       "role": "system",
@@ -15,78 +15,6 @@
     {
       "name": "displayTable",
       "description": "Display a table of data.\nUse for large data sets with multiple columns.\nDo not use when you expect one row or one column.",
-      "parameters": {
-        "type": "object",
-        "properties": {
-          "query": {
-            "type": "string",
-            "description": "A natural language query to text to a data expert.\nUse any context provided if possible.\nDo not write SQL, the data expert will handle it.\nYou can only read data. Insert, update or delete is not allowed."
-          },
-          "outputColumns": {
-            "type": "array",
-            "description": "The columns to display in the table.\nExample: [{\"name\": \"name\", \"label\": \"Name\"}, {\"name\": \"age\", \"label\": \"Age\"}]",
-            "items": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string",
-                  "description": "the name of the column in the JSON result"
-                },
-                "label": {
-                  "type": "string",
-                  "description": "the label to display in the table"
-                }
-              },
-              "required": ["name", "label"]
-            }
-          }
-        },
-        "required": ["query", "outputColumns"]
-      }
-    },
-    {
-      "name": "displayList",
-      "description": "Display values.\nUse to answer to a query that returns a list of names or values.\nDo not use when some other information could be useful.",
-      "parameters": {
-        "type": "object",
-        "properties": {
-          "query": {
-            "type": "string",
-            "description": "A natural language query to text to a data expert.\nUse any context provided if possible.\nDo not write SQL, the data expert will handle it.\nYou can only read data. Insert, update or delete is not allowed."
-          },
-          "outputColumn": {
-            "type": "string",
-            "description": "the name of the column in the JSON result"
-          }
-        },
-        "required": ["query", "outputColumn"]
-      }
-    },
-    {
-      "name": "displayBarChart",
-      "description": "Display a list of labelled numeric values as a bar chart.\nUse for data sets with numeric values.\nYou need to get 2 columns and include a label.",
-      "parameters": {
-        "type": "object",
-        "properties": {
-          "query": {
-            "type": "string",
-            "description": "A natural language query to text to a data expert.\nUse any context provided if possible.\nDo not write SQL, the data expert will handle it.\nYou can only read data. Insert, update or delete is not allowed."
-          },
-          "labelOutputColumn": {
-            "type": "string",
-            "description": "the name of the column with the label in the JSON result"
-          },
-          "valueOutputColumn": {
-            "type": "string",
-            "description": "the name of the column with the value in the JSON result"
-          }
-        },
-        "required": ["query", "labelOutputColumn", "valueOutputColumn"]
-      }
-    },
-    {
-      "name": "displaySingleValue",
-      "description": "Display a single data point.\nUse to answer very simple question, with a value or a name.",
       "parameters": {
         "type": "object",
         "properties": {
