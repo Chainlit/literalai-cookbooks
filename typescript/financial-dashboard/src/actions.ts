@@ -9,7 +9,8 @@ export const continueConversationWithData = async (
   history: CoreMessage[],
   threadId: string
 ) => {
-  return literalClient.thread({ id: threadId }).wrap(async () => {
+  const firstUserMessage = history.find(msg => msg.role === 'user')?.content ?? "New conversation";
+  return literalClient.thread({ id: threadId, name: firstUserMessage }).wrap(async () => {
     await literalClient
       .step({
         type: "user_message",
