@@ -74,7 +74,7 @@ export const streamChatWithData = async (history: CoreMessage[]) => {
       };
 
       const { name, templateMessages, settings, tools } = await import('./prompt.json');
-      console.log(name);
+
       const prompt = await literalClient.api.getOrCreatePrompt(
          name, templateMessages as any, settings, tools 
       );
@@ -83,7 +83,6 @@ export const streamChatWithData = async (history: CoreMessage[]) => {
       messages = [...messages, ...history];
 
       const displayTableJson = tools.find(tool => tool.name === 'displayTable');
-      console.log(messages);
 
 
       const displayTableTool = tool({
@@ -92,13 +91,12 @@ export const streamChatWithData = async (history: CoreMessage[]) => {
           query: string;
         }>(displayTableJson?.parameters),
         execute: async ({ query }) => {
-          console.log("displayTable");
+
           const placeholder = appendPlaceholder();
+          // todo: wrap
           const queryResult = await queryDatabase(
             query
           );
-          console.log("queryResult");
-          console.log(queryResult);
           
           const columns = Object.keys(queryResult.result[0]).map(key => ({
             name: key,
@@ -141,6 +139,7 @@ export const streamChatWithData = async (history: CoreMessage[]) => {
             }
           }
         }
+        //TODO: assistant message could only show: table shown corresponding to following sql query
         await Promise.all(
           streamValue.map((message) =>
             literalClient

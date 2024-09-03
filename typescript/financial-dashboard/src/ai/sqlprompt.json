@@ -1,5 +1,5 @@
 {
-  "name": "SQLQueryGenerator",
+  "name": "SqlExpert",
   "templateMessages": [
     {
       "role": "system",

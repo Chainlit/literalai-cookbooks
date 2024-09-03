@@ -98,13 +98,19 @@ export const AiCopilotSheet: React.FC = () => {
     const reponse = await continueConversationWithData(messages, threadId);
 
     for await (const chunk of readStreamableValue(reponse)) {
+      // TODO: fix the runId issue
+      // item.runId is undefined
+      let tempRunId = "11111";
+
       const botMessages: Message[] = (chunk ?? []).map((item) => {
+        console.log("botMessages");
+        console.log(item);
         switch (item.type) {
           case "text":
             return {
               role: "assistant",
               content: item.content,
-              runId: item.runId,
+              runId: tempRunId,
             };
           case "loading":
             return {
@@ -120,7 +126,7 @@ export const AiCopilotSheet: React.FC = () => {
               return {
                 role: "assistant",
                 data: `Display component ${item.name}`,
-                runId: item.runId,
+                runId: tempRunId,
                 display: (
                   <Component
                     {...(item.props as any)}
@@ -132,7 +138,7 @@ export const AiCopilotSheet: React.FC = () => {
               return {
                 role: "assistant",
                 content: `Component ${item.name} not found`,
-                runId: item.runId,
+                runId: tempRunId,
               };
             }
           }
@@ -248,11 +254,11 @@ type SoftSheetProps = {
 const SoftSheet: React.FC<SoftSheetProps> = ({ open, setOpen, children }) => (
   <div
     data-state={open ? "open" : "closed"}
-    className="relative transition-all ease-in-out data-[state=closed]:w-0 data-[state=open]:w-80 data-[state=closed]:duration-300 data-[state=open]:duration-500"
+    className="relative transition-all ease-in-out data-[state=closed]:w-0 data-[state=open]:w-96 data-[state=closed]:duration-300 data-[state=open]:duration-500"
   >
     <div
       data-state={open ? "open" : "closed"}
-      className="absolute inset-y-0 left-0 right-0 top-0 flex h-full w-80 flex-col gap-4 border-l bg-background p-6 shadow-lg transition-all ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500"
+      className="absolute inset-y-0 left-0 right-0 top-0 flex h-full w-96 flex-col gap-4 border-l bg-background p-6 shadow-lg transition-all ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500"
     >
       {children}
       <button
