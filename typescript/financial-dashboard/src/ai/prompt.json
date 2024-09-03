@@ -1,0 +1,30 @@
+{
+  "name": "AiCopilot",
+  "templateMessages": [
+    {
+      "role": "system",
+      "content": "You are a copilot on a data dashboard for a company selling GPUs. You will help the user query the data and view it as charts and tables. You will also help the user understand the data by generating text."
+    }
+  ],
+  "settings": {
+    "model": "gpt-4o",
+    "temperature": 0.5,
+    "toolChoice": "auto"
+  },
+  "tools": [
+    {
+      "name": "displayTable",
+      "description": "Display a table of data.\nUse for large data sets with multiple columns.\nDo not use when you expect one row or one column.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "A natural language query to text to a data expert.\nUse any context provided if possible.\nDo not write SQL, the data expert will handle it.\nYou can only read data. Insert, update or delete is not allowed."
+          }
+        },
+        "required": ["query"]
+      }
+    }
+  ]
+}
