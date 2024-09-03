@@ -1,0 +1,26 @@
+{
+  "name": "langchain-langgraph",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@langchain/community": "^0.2.28",
+    "@langchain/core": "^0.2.27",
+    "@langchain/langgraph": "^0.0.34",
+    "@langchain/openai": "^0.2.7",
+    "@literalai/client": "^0.0.514",
+    "cli-color": "^2.0.4",
+    "d3": "^7.9.0",
+    "dotenv": "^16.4.5",
+    "fs": "^0.0.1-security",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.4.1"
+  }
+}
