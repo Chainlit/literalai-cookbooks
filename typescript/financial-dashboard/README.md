@@ -1,3 +1,16 @@
+# Financial Dashboard with AI Copilot
+
+This project is a financial dashboard enhanced with an AI copilot, featuring Generative UI and an interactive experience.
+
+## Key Features
+
+- **AI Copilot**: An intelligent assistant that helps users navigate the dashboard, understand financial data, and make informed decisions.
+- **Generative UI**: Dynamic user interface elements that adapt to user needs and data patterns, providing a personalized experience.
+- **Interactive Experience**: Engaging visualizations and real-time data updates that allow users to explore financial information intuitively.
+
+The AI copilot leverages natural language processing to understand user queries and provide context-aware responses. The Generative UI dynamically creates and adjusts dashboard components based on user behavior and data relevance. Together, these features create a powerful, interactive financial tool that caters to both novice and expert users.
+
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
