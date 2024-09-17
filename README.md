@@ -23,7 +23,7 @@ For more information, find the full documentation [here](https://docs.getliteral
 | [Distributed Tracing](/python/distributed-tracing/)                                         | Observability                         | Trace a distributed (TS and Py) service                                         |
 | [Monitor a Conversational AI agent](/python/monitor-conversational-ai-agent/)                                         | Observability                         | Monitor a Conversational AI agent, built in FastAPI                                         |
 | [Monitor a Multimodal chatbot](/python/multimodal-conversational-ai/)                                         | Observability                         | Monitor a multimodal Conversational AI agent, built with OpenAI                                         |
-
+| [LangChain and LangGraph examples](/python/langchain-langgraph/)                                                      | Observability                         | Three examples with LangChain/LangGraph : a basic RAG, a graph flow with tool use, and a multi-agent flow  |
 
 ### TypeScript
 
