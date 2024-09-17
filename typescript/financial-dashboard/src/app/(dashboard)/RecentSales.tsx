@@ -57,15 +57,6 @@ export const RecentSales: React.FC = () => {
         {sales
           ? sales.map((sale, index) => (
               <div key={index} className="flex items-center gap-4">
-                {/* <Avatar className="hidden size-9 sm:block">
-                  <AvatarImage
-                    src={`https://i.pravatar.cc/150?u=${sale.userEmail}`}
-                    alt={sale.userName}
-                  />
-                  <AvatarFallback>
-                    {sale.userName.substring(0, 2)}
-                  </AvatarFallback>
-                </Avatar> */}
                 <div className="grid gap-1">
                   <p className="text-sm font-medium leading-none">
                     {sale.userName}

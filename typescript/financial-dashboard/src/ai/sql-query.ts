@@ -9,8 +9,8 @@ import {
 import { type Database } from "better-sqlite3";
 
 import { literalClient } from "@/lib/literal";
-// import sqlPrompt from "./sqlprompt.json";
 
+// import sqlPrompt from "./sqlprompt.json";
 
 const generateText = literalClient.instrumentation.vercel.instrument(
   generateTextWithoutMonitoring
@@ -40,24 +40,24 @@ export const queryDatabase = async <T = unknown>(
   query: string,
   columnNames?: string[]
 ): Promise<QueryResult<T>> => {
-  
   // Option 1: Import the sqlPrompt directly from the JSON file
-  // const { name, templateMessages, settings } = await import('./sqlprompt.json');
-  // const prompt = await literalClient.api.getOrCreatePrompt(
-  //   name, templateMessages as any, settings 
-  // );
+  const { name, templateMessages, settings } = await import("./sqlprompt.json");
+  const prompt = await literalClient.api.getOrCreatePrompt(
+    name,
+    templateMessages as any,
+    settings
+  );
 
   // Option 2: Get the prompt from the Literal API
-  const startTime = performance.now();
-  const prompt = await literalClient.api.getPrompt('SqlExpert');
-  const endTime = performance.now();
-  console.log(`Time to fetch prompt: ${endTime - startTime} ms`);
-  console.log(prompt);
-
+  // const startTime = performance.now();
+  // const prompt = await literalClient.api.getPrompt('SqlExpert');
+  // const endTime = performance.now();
+  // console.log(`Time to fetch prompt: ${endTime - startTime} ms`);
+  // console.log(prompt);
 
   const schema = getSqlSchema(db);
 
-  let messages = prompt.formatMessages({schema:schema});
+  let messages = prompt.formatMessages({ schema: schema });
 
   return literalClient
     .step({

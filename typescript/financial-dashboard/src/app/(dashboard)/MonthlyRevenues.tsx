@@ -1,17 +1,7 @@
 import { useState } from "react";
 
 import { useQuery } from "@tanstack/react-query";
-import {
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
-  ReferenceArea,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { Line, LineChart, ReferenceArea, XAxis, YAxis } from "recharts";
 import type { CategoricalChartFunc } from "recharts/types/chart/generateCategoricalChart";
 import colors from "tailwindcss/colors";
 
@@ -23,6 +13,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { formatCurrency, monthFormatter } from "@/lib/formatter";
@@ -32,6 +28,13 @@ import { AiCopilotButton } from "../../components/molecules/ai-copilot/AiCopilot
 import { getMonthlyRevenues } from "./queries";
 
 type Props = React.ComponentProps<typeof Card>;
+
+const chartConfig = {
+  desktop: {
+    label: "Desktop",
+    color: "hsl(var(--chart-1))",
+  },
+} satisfies ChartConfig;
 
 export const MonthlyRevenues: React.FC<Props> = ({ className, ...props }) => {
   const [aiActive, setAiActive] = useState(false);
@@ -100,22 +103,33 @@ export const MonthlyRevenues: React.FC<Props> = ({ className, ...props }) => {
         {error ? <ErrorBlock error={error} /> : null}
         {isLoading ? <Skeleton className="h-[400px] w-full" /> : null}
         {revenues ? (
-          <ResponsiveContainer width="100%" height={400}>
+          <ChartContainer config={chartConfig}>
             <LineChart
+              accessibilityLayer
               data={revenues}
               onMouseDown={selectionStart}
               onMouseMove={selectionUpdate}
               onMouseLeave={selectionEnd}
               onMouseUp={selectionEnd}
             >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" tickFormatter={monthFormatter} />
-              <YAxis tickFormatter={formatCurrency} />
-              <Tooltip
-                labelFormatter={monthFormatter}
-                formatter={formatCurrency}
+              <XAxis
+                dataKey="month"
+                tickFormatter={monthFormatter}
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
               />
-              <Legend />
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent indicator="line" />}
+              />
+              <YAxis
+                tickFormatter={formatCurrency}
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+              />
+
               {selectedPeriod ? (
                 <ReferenceArea
                   x1={selectedPeriod[0]}
@@ -131,7 +145,7 @@ export const MonthlyRevenues: React.FC<Props> = ({ className, ...props }) => {
                 stroke={colors.rose[500]}
               />
             </LineChart>
-          </ResponsiveContainer>
+          </ChartContainer>
         ) : null}
       </CardContent>
     </Card>

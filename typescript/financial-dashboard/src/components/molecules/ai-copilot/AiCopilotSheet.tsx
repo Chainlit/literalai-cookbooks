@@ -95,13 +95,12 @@ export const AiCopilotSheet: React.FC = () => {
     setQuery("");
     setHistory([...history, userMessage]);
 
-    const reponse = await continueConversationWithData(messages, threadId);
+    const [stream, runId] = await continueConversationWithData(
+      messages,
+      threadId
+    );
 
-    for await (const chunk of readStreamableValue(reponse)) {
-      // TODO: fix the runId issue
-      // item.runId is undefined
-      let tempRunId = "11111";
-
+    for await (const chunk of readStreamableValue(stream)) {
       const botMessages: Message[] = (chunk ?? []).map((item) => {
         console.log("botMessages");
         console.log(item);
@@ -110,7 +109,7 @@ export const AiCopilotSheet: React.FC = () => {
             return {
               role: "assistant",
               content: item.content,
-              runId: tempRunId,
+              runId: runId,
             };
           case "loading":
             return {
@@ -126,7 +125,7 @@ export const AiCopilotSheet: React.FC = () => {
               return {
                 role: "assistant",
                 data: `Display component ${item.name}`,
-                runId: tempRunId,
+                runId: runId,
                 display: (
                   <Component
                     {...(item.props as any)}
@@ -138,7 +137,7 @@ export const AiCopilotSheet: React.FC = () => {
               return {
                 role: "assistant",
                 content: `Component ${item.name} not found`,
-                runId: tempRunId,
+                runId: runId,
               };
             }
           }
@@ -154,6 +153,7 @@ export const AiCopilotSheet: React.FC = () => {
 
   return (
     <SoftSheet open={open} setOpen={setOpen}>
+      <div className="text-lg font-bold">AI Copilot</div>
       <section
         ref={scrollContainer}
         className="flex-1 overflow-y-auto overflow-x-hidden"
@@ -174,7 +174,7 @@ export const AiCopilotSheet: React.FC = () => {
       </section>
 
       {history.length < 1 && query.length < 1 ? (
-        <section className="space-y-2">
+        <section className="flex gap-2">
           {SampleQuestions.map((question) => (
             <Button
               key={question}
@@ -254,11 +254,11 @@ type SoftSheetProps = {
 const SoftSheet: React.FC<SoftSheetProps> = ({ open, setOpen, children }) => (
   <div
     data-state={open ? "open" : "closed"}
-    className="relative transition-all ease-in-out data-[state=closed]:w-0 data-[state=open]:w-96 data-[state=closed]:duration-300 data-[state=open]:duration-500"
+    className="relative transition-all ease-in-out data-[state=closed]:w-0 data-[state=open]:w-[40vw] data-[state=closed]:duration-300 data-[state=open]:duration-500"
   >
     <div
       data-state={open ? "open" : "closed"}
-      className="absolute inset-y-0 left-0 right-0 top-0 flex h-full w-96 flex-col gap-4 border-l bg-background p-6 shadow-lg transition-all ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500"
+      className="absolute inset-y-0 left-0 right-0 top-0 flex h-full w-full flex-col gap-4 border-l bg-background p-6 shadow-lg transition-all ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500"
     >
       {children}
       <button
