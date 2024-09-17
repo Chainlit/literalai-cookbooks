@@ -1,14 +1,6 @@
-# LangChain and LangGraph examples
+# LangGraph example
 
 This repository contains examples demonstrating the integration of LangChain and LangGraph for building advanced language models and graph-based workflows.
-
-
-
-- [LangChain and LangGraph examples](#langchain-and-langgraph-examples)
-    - [Setup](#setup)
-    - [Dependencies](#dependencies)
-    - [Environment Variables](#environment-variables)
-    - [Run the examples](#run-the-examples)
 
 ### Setup
 
@@ -34,10 +26,10 @@ Set up the following environment variables:
 
 ### Run the examples
 
-You can execute the `lclg.py` file to see the working example by running:
+You can execute the `langgraph-example.py` file to see the working example by running:
 
 ```bash
-python3 lclg.py
+python3 langgraph-example.py
 ```
 
 It is also possible to run the example in the LangGraph integration notebook, to get a step by step explanation of the literal's integration in the LangGraph workflow.
