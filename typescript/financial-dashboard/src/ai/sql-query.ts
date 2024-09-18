@@ -87,8 +87,12 @@ export const queryDatabase = async <T = unknown>(
         const query = text.match(/```sql\n((?:.|\n)+)\n```/)?.[1] ?? text;
 
         try {
-          const result = db.prepare(query).all() as T[];
-          return { result, query, attempts };
+          return literalClient
+            .step({ name: "Run DB query", type: "tool", input: { query } })
+            .wrap(async () => {
+              const result = db.prepare(query).all() as T[];
+              return { result, query, attempts };
+            });
         } catch (error) {
           messages.push(
             { role: "assistant", content: text },

@@ -87,9 +87,8 @@ export const streamChatWithData = async (history: CoreMessage[]) => {
     }>(displayTableJson?.parameters),
     execute: async ({ query }) => {
       const placeholder = appendPlaceholder();
-      // todo: wrap
-      const queryResult = await queryDatabase(query);
 
+      const queryResult = await queryDatabase(query);
       const columns = Object.keys(queryResult.result[0]).map((key) => ({
         name: key,
         label: key.charAt(0).toUpperCase() + key.slice(1),
