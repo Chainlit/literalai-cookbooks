@@ -115,22 +115,22 @@ export const streamChatWithData = async (history: CoreMessage[]) => {
   });
 
   (async () => {
+    const currentStep = literalClient.getCurrentStep();
     for await (const chunk of result.fullStream) {
       switch (chunk.type) {
         case "text-delta": {
-          const currentStep = literalClient.getCurrentStep();
-          if (!currentStep?.output) {
-            currentStep.output = { content: "" };
+          if (chunk.textDelta) {
+            appendDelta(chunk.textDelta);
+            currentStep.output = {
+              // @ts-expect-error typing is incorrect
+              content: streamValue[streamValue.length - 1].content,
+            };
           }
-          currentStep.output.content += chunk.textDelta;
-          appendDelta(chunk.textDelta);
           break;
         }
         case "tool-result": {
           if (chunk.result) {
-            const currentStep = literalClient.getCurrentStep();
             currentStep.output = chunk.result;
-            literalClient.api.sendSteps([currentStep]);
             const { placeholder, name, props } = chunk.result;
             appendComponent(placeholder, name, props);
           }
@@ -138,6 +138,8 @@ export const streamChatWithData = async (history: CoreMessage[]) => {
         }
       }
     }
+    console.log(currentStep);
+    literalClient.api.sendSteps([currentStep]);
     //TODO: assistant message could only show: table shown corresponding to following sql query
     await Promise.all(
       streamValue.map((message) =>
