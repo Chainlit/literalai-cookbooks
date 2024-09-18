@@ -118,11 +118,19 @@ export const streamChatWithData = async (history: CoreMessage[]) => {
     for await (const chunk of result.fullStream) {
       switch (chunk.type) {
         case "text-delta": {
+          const currentStep = literalClient.getCurrentStep();
+          if (!currentStep?.output) {
+            currentStep.output = { content: "" };
+          }
+          currentStep.output.content += chunk.textDelta;
           appendDelta(chunk.textDelta);
           break;
         }
         case "tool-result": {
           if (chunk.result) {
+            const currentStep = literalClient.getCurrentStep();
+            currentStep.output = chunk.result;
+            literalClient.api.sendSteps([currentStep]);
             const { placeholder, name, props } = chunk.result;
             appendComponent(placeholder, name, props);
           }

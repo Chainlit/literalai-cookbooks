@@ -102,8 +102,6 @@ export const AiCopilotSheet: React.FC = () => {
 
     for await (const chunk of readStreamableValue(stream)) {
       const botMessages: Message[] = (chunk ?? []).map((item) => {
-        console.log("botMessages");
-        console.log(item);
         switch (item.type) {
           case "text":
             return {
