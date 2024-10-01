@@ -1,0 +1,44 @@
+{
+    "name": "weather-assistant",
+    "provider": "openai",
+    "settings": {
+        "model": "gpt-4o-mini",
+        "temperature": 0.5
+    },
+    "template_messages": [
+        {
+            "content": "You are a weather assistant.",
+            "role": "system"
+        }
+    ],
+    "tools": [
+        {
+            "function": {
+                "description": "Get the current weather",
+                "name": "get_current_weather",
+                "parameters": {
+                    "properties": {
+                        "format": {
+                            "description": "The temperature unit to use. Infer this from the users location.",
+                            "enum": [
+                                "celsius",
+                                "fahrenheit"
+                            ],
+                            "type": "string"
+                        },
+                        "location": {
+                            "description": "The city and state, e.g. San Francisco, CA",
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "location",
+                        "format"
+                    ],
+                    "type": "object"
+                }
+            },
+            "type": "function"
+        }
+    ]
+}
