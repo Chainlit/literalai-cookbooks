@@ -1,6 +1,4 @@
 python-dotenv>=1.0.1
-literalai>=0.0.503
-outlines
+literalai>=0.1.0
 matplotlib
 openai
-tiktoken    
