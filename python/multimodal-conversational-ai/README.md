@@ -74,4 +74,4 @@ literalai_client.flush_and_stop()
 ```
 
 Here's an example of how different kinds of attachments are displayed in Literal.
-![example](/img/attachments.png)
+![example](/img/healthy-meal.png)
