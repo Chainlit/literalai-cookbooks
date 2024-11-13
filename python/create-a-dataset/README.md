@@ -2,34 +2,36 @@
 title: Create and Populate a Dataset
 ---
 
-In this Python example, you will learn how to create a Dataset and Populate it with example items. We will create items from a list of values. If you want to create a Dataset from existing Runs, Steps or Generations from production data, check the API reference ([Python](/python-client/api-reference), [TypeScript](typescript-client/api-reference/dataset#add-a-step-to-a-dataset)).
+💡 Consider uploading a CSV directly from the UI.
+
+In this Python example, you will learn how to create a Dataset and populate it with example items. We will create items from a list of values. If you want to create a Dataset from existing Runs, Steps or Generations from production data, check the API reference ([Python](/python-client/api-reference), [TypeScript](typescript-client/api-reference/dataset#add-a-step-to-a-dataset)).
 
 Let's create a dataset consisting of questions and answers to movie titles.
 
 # 1. Connect to the client
 
-```Python Python
+```python Python
 from literalai import LiteralClient
 import os
 
-literal_client = LiteralClient(api_key=os.getenv("LITERAL_API_KEY"))
+literalai_client = LiteralClient(api_key=os.getenv("LITERAL_API_KEY"))
 ```
 
 # 2. Create a Dataset
 
-Before we can add items to a Dataset, we need to create one. 
+Before we can add items to a Dataset, we need to create one.
 
 ```Python Python
-dataset = literal_client.api.create_dataset(
-  name = "movie_titles", 
-  description = "Gold standard dataset of movie title q&a", 
+dataset = literalai_client.api.create_dataset(
+  name = "movie_titles",
+  description = "Gold standard dataset of movie title q&a",
   type = "key_value"
 )
 ```
 
 # 3. Populate the Dataset
 
-Next, we add local items to this dataset 
+Next, we add local items to this dataset
 
 ```python Python
 # example items
@@ -44,7 +46,7 @@ items = [
 
 # upload to Literal AI
 for item in items:
-    literal_client.api.create_dataset_item(
+    literalai_client.api.create_dataset_item(
         dataset_id = dataset.id,
         input = { "content": item["input"] },
         expected_output = { "content": item["expected_output"] }

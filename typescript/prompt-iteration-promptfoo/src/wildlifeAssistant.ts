@@ -4,20 +4,22 @@ import "dotenv/config";
 
 import { Prompt } from "@literalai/client";
 
-import { client } from "./index";
+import { literalAiClient } from "./init";
+
+// Instrument the OpenAI client
+literalAiClient.instrumentation.openai();
 
 const openai = new OpenAI();
-client.instrumentation.openai();
 
 async function wildlifeAssistant(messages: ChatCompletionMessageParam[]) {
-  return client
+  return literalAiClient
     .run({
       name: "Wildlife Assistant",
       input: { content: messages?.slice(-1)[0].content },
     })
     .wrap(async () => {
       const completion = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
+        model: "gpt-4o-mini",
         messages: messages,
       });
 
@@ -36,8 +38,8 @@ export async function runApplication(promptTemplate: Prompt) {
 
     console.log("Starting thread for animal: ", animal);
 
-    await client.thread({ name: animal }).wrap(async () => {
-      await client
+    await literalAiClient.thread({ name: animal }).wrap(async () => {
+      await literalAiClient
         .step({
           output: { content: messages?.slice(-1)[0].content },
           type: "user_message",
@@ -45,7 +47,7 @@ export async function runApplication(promptTemplate: Prompt) {
         })
         .send();
 
-      return client
+      return literalAiClient
         .step({
           type: "user_message",
           name: "User",

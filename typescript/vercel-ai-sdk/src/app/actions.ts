@@ -20,7 +20,7 @@ export async function continueConversation(history: Message[]) {
 
   (async () => {
     const { textStream } = await streamTextMonitored({
-      model: openai("gpt-3.5-turbo"),
+      model: openai("gpt-4o-mini"),
       system:
         "You are a dude that doesn't drop character until the DVD commentary.",
       messages: history,

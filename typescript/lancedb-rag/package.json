@@ -10,7 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@literalai/client": "^0.0.509",
+    "@literalai/client": "^0.1.0",
+    "@lancedb/vectordb-darwin-arm64": "^0.5.0",
     "dotenv": "^16.4.5",
     "node-fetch": "^3.3.2",
     "openai": "^4.48.1",

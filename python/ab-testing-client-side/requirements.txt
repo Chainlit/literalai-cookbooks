@@ -1,4 +1,4 @@
 python-dotenv>=1.0.1
-literalai>=0.0.503
+literalai>=0.1.0
 openai
 matplotlib 

@@ -15,7 +15,7 @@ export async function continueConversation(history: CoreMessage[]) {
 
   (async () => {
     const { textStream } = await streamTextMonitored({
-      model: openai("gpt-3.5-turbo"),
+      model: openai("gpt-4o-mini"),
       system:
         "You are a tourist guide helping people find interesting places to visit.",
       messages: history,

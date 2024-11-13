@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "0.0.36",
-    "@literalai/client": "0.0.506",
+    "@literalai/client": "0.1.0",
     "ai": "3.2.19",
     "leaflet": "^1.9.4",
     "leaflet-defaulticon-compatibility": "^0.1.2",
