@@ -21,8 +21,6 @@ Set up the following environment variables:
 - `OPENAI_API_KEY`: Your OpenAI API key
 - `LITERALAI_API_KEY`: Your Literal AI API key
 - `TAVILY_API_KEY`: Your Tavily API key (optional for multi-agent example)
-- `LITERAL_API_URL`: The URL of the Literal API
-
 
 ### Run the examples
 
@@ -32,4 +30,4 @@ You can execute the `langgraph-example.py` file to see the working example by ru
 python3 langgraph-example.py
 ```
 
-It is also possible to run the example in the LangGraph integration notebook, to get a step by step explanation of the literal's integration in the LangGraph workflow.
+It is also possible to run the example in the LangGraph integration notebook, to get a step by step explanation of the Literal AI's integration in the LangGraph workflow.
