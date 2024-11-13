@@ -11,12 +11,12 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "promptfoo": "^0.48.0",
+    "promptfoo": "^0.96.1",
     "tsc-watch": "^6.2.0",
     "typescript": "^5.4.4"
   },
   "dependencies": {
-    "@literalai/client": "^0.0.509",
+    "@literalai/client": "^0.1.1",
     "dotenv": "^16.4.5"
   }
 }

@@ -1,11 +1,11 @@
 import promptfoo, {
   Assertion,
-  EvaluateResult,
   EvaluateTestSuite,
   TestCase
 } from 'promptfoo';
 
 import { Dataset, Prompt, Score } from '@literalai/client';
+import EvalResult from 'promptfoo/dist/src/models/evalResult';
 
 /**
  * Evaluate a dataset against a prompt template.
@@ -35,14 +35,15 @@ export async function evaluateWithPromptfoo(
     };
   });
 
-  // Evaluate suite on our prompt template for the GPT-3.5-turbo provider.
+  // Evaluate suite on our prompt template for the GPT-4o provider.
   const testSuite: EvaluateTestSuite = {
-    prompts: [({ vars }: any) => promptTemplate.format(vars)] as any,
-    providers: ['openai:gpt-3.5-turbo'],
+    prompts: [({ vars }: any) => promptTemplate.formatMessages(vars)] as any,
+    providers: ['openai:gpt-4o'],
     tests: testCases
   };
 
   const results = (await promptfoo.evaluate(testSuite)).results;
+
   return addExperimentToLiteral(
     name,
     dataset,
@@ -55,13 +56,13 @@ export async function evaluateWithPromptfoo(
 export async function addExperimentToLiteral(
   name: string,
   dataset: Dataset,
-  promptId: string,
+  promptVariantId: string,
   params: Assertion[],
-  results: EvaluateResult[]
+  results: EvalResult[]
 ) {
   const datasetExperiment = await dataset.createExperiment({
     name,
-    promptId,
+    promptVariantId,
     params
   });
 
