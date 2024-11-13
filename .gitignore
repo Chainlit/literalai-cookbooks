@@ -5,5 +5,8 @@
 **/dist
 **/node_modules
 
+# Uvicorn CPython
+**/*.pyc
+
 .env
 .python-version
